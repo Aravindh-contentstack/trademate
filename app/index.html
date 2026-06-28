@@ -119,6 +119,13 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 .scroll-body::-webkit-scrollbar{width:3px}
 .scroll-body::-webkit-scrollbar-track{background:transparent}
 .scroll-body::-webkit-scrollbar-thumb{background:#252C45;border-radius:2px}
+
+/* ── SYNC + REPORT ───────────────────────────────────────────────── */
+.sync-badge{font-size:11px;color:#2DD4A0;letter-spacing:.3px;padding:5px 12px;background:rgba(45,212,160,.08);border:1px solid rgba(45,212,160,.2);border-radius:8px;margin-bottom:8px;text-align:center}
+.modal-overlay{position:fixed;inset:0;background:rgba(11,14,26,.92);z-index:200;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px}
+.modal-box{background:#13172A;border:1px solid #252C45;border-radius:16px;padding:20px;width:100%;max-width:480px;display:flex;flex-direction:column;gap:10px;margin:auto}
+.modal-title{font-size:15px;font-weight:700;color:#E6EAF5}
+.report-pre{background:#0B0E1A;border:1px solid #1A1F35;border-radius:10px;padding:14px;font-size:11px;font-family:ui-monospace,monospace;color:#9DA8C7;overflow-x:auto;white-space:pre;line-height:1.5;max-height:50vh;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -641,8 +648,66 @@ const DATA = {
 };
 
 // ─── STATE ─────────────────────────────────────────────────────────────────
-const S = { inst:null, step:'home', fac:{}, gates:{}, model:null };
+const S = { inst:null, step:'home', fac:{}, gates:{}, model:null, _report:null };
 const STEPS = ['daily','h4','h1','entry'];
+
+// ─── SYNC CONFIG (edit these once) ──────────────────────────────────────────
+const FB_URL = '';        // e.g. https://my-app-default-rtdb.firebaseio.com
+const FB_SECRET = '';     // from Project Settings > Service Accounts > Database secrets
+
+let DEVICE_ID = localStorage.getItem('tm_did');
+if (!DEVICE_ID) { DEVICE_ID = Math.random().toString(36).slice(2,10); localStorage.setItem('tm_did', DEVICE_ID); }
+
+// ─── SYNC ────────────────────────────────────────────────────────────────────
+let _syncTimer = null;
+let _sseSource = null;
+let _lastReportTs = 0;
+let _remoteMode = false;
+
+function syncEnabled() { return !!(FB_URL && FB_SECRET); }
+function fbPath(inst) { return FB_URL + '/latest/' + inst + '.json?auth=' + FB_SECRET; }
+
+function pushState() {
+  if (!syncEnabled() || !S.inst) return;
+  const body = JSON.stringify({
+    inst:S.inst, step:S.step, fac:S.fac, gates:S.gates, model:S.model,
+    report:S._report||null, deviceId:DEVICE_ID, ts:Date.now()
+  });
+  fetch(fbPath(S.inst), {method:'PUT', body:body, headers:{'Content-Type':'application/json'}}).catch(function(){});
+}
+
+function schedulePush() {
+  if (!syncEnabled()) return;
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(pushState, 600);
+}
+
+function applyRemoteState(snap) {
+  if (!snap || snap.deviceId === DEVICE_ID) return;
+  S.inst = snap.inst; S.step = snap.step;
+  S.fac = snap.fac || {}; S.gates = snap.gates || {};
+  S.model = snap.model || null; S._report = snap.report || null;
+  _remoteMode = true;
+  render();
+  if (snap.report && snap.report.ts > _lastReportTs) {
+    _lastReportTs = snap.report.ts;
+    showReportModal(snap.report.markdown);
+  }
+}
+
+function startSSE(inst) {
+  if (!syncEnabled()) return;
+  if (_sseSource) { _sseSource.close(); _sseSource = null; }
+  var es = new EventSource(fbPath(inst));
+  es.addEventListener('put',   function(e) { try { applyRemoteState(JSON.parse(e.data).data); } catch(x){} });
+  es.addEventListener('patch', function(e) { try { applyRemoteState(JSON.parse(e.data).data); } catch(x){} });
+  _sseSource = es;
+}
+
+function stopSSE() {
+  if (_sseSource) { _sseSource.close(); _sseSource = null; }
+  _remoteMode = false;
+}
 const STEP_LABELS = { daily:'Daily', h4:'4H', h1:'H1', entry:'Entry' };
 
 // ─── CALCULATION ───────────────────────────────────────────────────────────
@@ -857,8 +922,10 @@ function renderEntry() {
 function renderResults() {
   const p = getProbs();
   const instName = DATA[S.inst].name;
+  const syncBadge = _remoteMode ? '<div class="sync-badge">📡 Live — synced from mobile</div>' : '';
   return `<div class="scroll-body">
     <div class="grp-lbl">Results — ${instName}</div>
+    ${syncBadge}
     <div class="res-cards">
       <div class="res-card">
         <div class="res-card-lbl">Directional Probability</div>
@@ -872,7 +939,8 @@ function renderResults() {
       </div>
     </div>
     <div class="res-actions">
-      <button class="res-btn primary" onclick="restart()">New Analysis (${DATA[S.inst].name})</button>
+      <button class="res-btn primary" onclick="generateReport()">Generate Report</button>
+      <button class="res-btn" onclick="restart()">New Analysis (${instName})</button>
       <button class="res-btn" onclick="goHome()">Change Instrument</button>
     </div>
   </div>`;
@@ -941,6 +1009,7 @@ function sf(id, dir, w) {
   S.fac[id] = S.fac[id] === dir ? null : dir;
   updateRow(id);
   updateChips();
+  schedulePush();
 }
 
 function sg(id, val) {
@@ -960,6 +1029,7 @@ function sg(id, val) {
     if (btns[1]) btns[1].className = 'gbtn' + (val === false ? ' gn' : '');
   }
   updateChips();
+  schedulePush();
 }
 
 function ssg(id, val) {
@@ -979,6 +1049,7 @@ function ssg(id, val) {
     if (btns[1]) btns[1].className = 'gbtn' + (val === false ? ' gn' : '');
   }
   updateChips();
+  schedulePush();
 }
 
 function findGate(id) {
@@ -1008,11 +1079,13 @@ function findSubGate(id) {
 function selM(model) {
   S.model = model;
   render();
+  schedulePush();
 }
 
 function nav(step) {
   S.step = step;
   render();
+  schedulePush();
 }
 
 function startInst(inst) {
@@ -1021,12 +1094,16 @@ function startInst(inst) {
   S.fac = {};
   S.gates = {};
   S.model = null;
+  S._report = null;
+  _remoteMode = false;
   render();
+  startSSE(inst);
 }
 
 function goHome() {
   S.step = 'home';
   render();
+  stopSSE();
 }
 
 function restart() {
@@ -1034,8 +1111,116 @@ function restart() {
   S.fac = {};
   S.gates = {};
   S.model = null;
+  S._report = null;
   S.step = 'daily';
+  _remoteMode = false;
   render();
+  schedulePush();
+}
+
+// ─── REPORT ──────────────────────────────────────────────────────────────────
+function buildReportMarkdown() {
+  var p = getProbs();
+  var instName = DATA[S.inst].name;
+  var date = new Date().toISOString().slice(0,10);
+  function yn(d) { return d === 'pos' ? 'Yes' : d === 'neg' ? 'No' : null; }
+  var thr = S.inst === 'xau' ? 0.50 : 0.57;
+  function sigStr(v) { return v===null ? '—' : v>=thr ? '🟢 STRONG' : '🔴 WEAK'; }
+  var IND = '    ';
+
+  var lines = ['## ' + instName + ' — ' + date, ''];
+  lines.push('| Confluence Factor | Factor Support | Weight |');
+  lines.push('|---|---|---|');
+
+  ['daily','h4','h1'].forEach(function(sk) {
+    var sec = DATA[S.inst].sections[sk];
+    var tf = sec.label;
+    sec.always.forEach(function(fi) {
+      var d = S.fac[fi.id];
+      if (d) lines.push('| ' + tf + ' ' + fi.label + ' | ' + yn(d) + ' | ' + fi.weight.toFixed(4) + ' |');
+    });
+    sec.gates.forEach(function(gate) {
+      if (S.gates[gate.id] !== true) return;
+      gate.items.forEach(function(item) {
+        if (item.type === 'label') return;
+        if (item.type === 'factor') {
+          var d = S.fac[item.id];
+          if (d) lines.push('| ' + tf + ' ' + gate.question + ' - ' + item.label + ' | ' + yn(d) + ' | ' + item.weight.toFixed(4) + ' |');
+        } else if (item.type === 'nested-gate') {
+          if (S.gates[item.id] !== true) return;
+          item.items.forEach(function(sub) {
+            if (sub.type !== 'factor') return;
+            var d = S.fac[sub.id];
+            if (d) lines.push('| ' + IND + item.question + ' - ' + sub.label + ' | ' + yn(d) + ' | ' + sub.weight.toFixed(4) + ' |');
+          });
+        }
+      });
+    });
+  });
+
+  if (S.model && DATA[S.inst].entry[S.model]) {
+    lines.push('| **Entry: ' + S.model + '** | — | — |');
+    DATA[S.inst].entry[S.model].forEach(function(fi) {
+      var d = S.fac[fi.id];
+      if (d) lines.push('| ' + fi.label + ' | ' + yn(d) + ' | ' + fi.weight.toFixed(4) + ' |');
+    });
+  }
+
+  lines.push('');
+  lines.push('| Metric | Value | Signal |');
+  lines.push('|--------|-------|--------|');
+  lines.push('| DIR Probability | ' + pFmt(p.dir) + ' | ' + sigStr(p.dir) + ' |');
+  lines.push('| TRADE Probability | ' + pFmt(p.trd) + ' | ' + sigStr(p.trd) + ' |');
+  lines.push('| Confluence Factors | ' + p.dirN + ' | — |');
+  lines.push('| Total Factors (w/ entry) | ' + p.trdN + ' | — |');
+  return lines.join('\n');
+}
+
+function generateReport() {
+  var md = buildReportMarkdown();
+  S._report = { generated:true, ts:Date.now(), markdown:md };
+  localStorage.setItem('tm_report_' + S.inst, JSON.stringify(S._report));
+  pushState();
+  showReportModal(md);
+}
+
+function showReportModal(md) {
+  var existing = document.getElementById('report-modal');
+  if (existing) existing.remove();
+  var el = document.createElement('div');
+  el.id = 'report-modal';
+  el.className = 'modal-overlay';
+  el.dataset.md = md;
+  el.innerHTML =
+    '<div class="modal-box">' +
+    '<div class="modal-title">Analysis Report</div>' +
+    '<pre class="report-pre">' + md.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>' +
+    '<button class="res-btn primary" id="copy-btn" onclick="copyReport()">Copy Report</button>' +
+    '<button class="res-btn" onclick="closeModal()">Close</button>' +
+    '</div>';
+  document.body.appendChild(el);
+}
+
+function copyReport() {
+  var el = document.getElementById('report-modal');
+  var md = el ? el.dataset.md : '';
+  var btn = document.getElementById('copy-btn');
+  function ok() { if (btn) { btn.textContent='✓ Copied!'; setTimeout(function(){ btn.textContent='Copy Report'; },1500); } }
+  if (navigator.clipboard) { navigator.clipboard.writeText(md).then(ok).catch(function(){ fallbackCopy(md,ok); }); }
+  else { fallbackCopy(md, ok); }
+}
+
+function fallbackCopy(text, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); cb(); } catch(x) {}
+  document.body.removeChild(ta);
+}
+
+function closeModal() {
+  var el = document.getElementById('report-modal');
+  if (el) el.remove();
 }
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
