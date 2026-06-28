@@ -12,6 +12,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overscroll-behavior:none}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0B0E1A;color:#E6EAF5;max-width:480px;margin:0 auto;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+#app{display:flex;flex-direction:column;height:100%;overflow:hidden}
 button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 
 /* ── HOME ─────────────────────────────────────────────────────── */
@@ -50,7 +51,7 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 /* ── SECTION TITLES ───────────────────────────────────────────── */
 .sec-ttl{font-size:11px;font-weight:700;letter-spacing:.8px;color:#4D5880;text-transform:uppercase;margin:0 0 4px 2px}
 .sec-sub{font-size:12px;color:#2E3655;margin-bottom:12px}
-.grp-lbl{font-size:11px;font-weight:600;letter-spacing:.5px;color:#3E4870;text-transform:uppercase;margin:14px 0 6px 2px}
+.grp-lbl{font-size:11px;font-weight:600;letter-spacing:.5px;color:#6B7599;text-transform:uppercase;margin:14px 0 6px 2px}
 
 /* ── FACTOR ROWS ──────────────────────────────────────────────── */
 .fr{display:flex;align-items:center;min-height:46px;padding:0 4px 0 12px;background:#13172A;border:1px solid #252C45;border-radius:10px;margin-bottom:5px;gap:6px;transition:border-color .12s,background .12s}
@@ -73,9 +74,9 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 /* ── GATE SECTIONS ────────────────────────────────────────────── */
 .gate{background:#13172A;border:1px solid #252C45;border-radius:13px;margin-bottom:8px;overflow:hidden}
 .gate-head{display:flex;align-items:center;justify-content:space-between;padding:11px 10px 11px 14px;gap:8px}
-.gate-q{font-size:13px;color:#9DA8C7;flex:1;line-height:1.35}
+.gate-q{font-size:13px;color:#C8D0E8;flex:1;line-height:1.35}
 .gate-btns{display:flex;gap:5px;flex-shrink:0}
-.gbtn{padding:5px 13px;border-radius:7px;border:1px solid #252C45;background:transparent;color:#4D5880;font-size:12px;font-weight:600}
+.gbtn{padding:5px 13px;border-radius:7px;border:1px solid #252C45;background:transparent;color:#8892B0;font-size:12px;font-weight:600}
 .gbtn.gy{border-color:#2DD4A0;color:#2DD4A0;background:rgba(45,212,160,.08)}
 .gbtn.gn{border-color:#3E4870;color:#E6EAF5;background:#1A1F35}
 .gate-body{display:none;padding:0 8px 8px}
@@ -84,10 +85,10 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 /* ── SUB-GATE ─────────────────────────────────────────────────── */
 .sg{background:#1A1F35;border:1px solid #252C45;border-radius:10px;margin-bottom:8px;overflow:hidden}
 .sg-head{display:flex;align-items:center;justify-content:space-between;padding:9px 8px 9px 12px;gap:8px}
-.sg-q{font-size:12px;color:#7A86A8;flex:1;line-height:1.3}
+.sg-q{font-size:12px;color:#A8B2CC;flex:1;line-height:1.3}
 .sg-body{display:none;padding:0 4px 6px}
 .sg-body.open{display:block}
-.grp-sublbl{font-size:10px;font-weight:600;letter-spacing:.5px;color:#2E3655;text-transform:uppercase;margin:8px 0 5px 4px}
+.grp-sublbl{font-size:10px;font-weight:600;letter-spacing:.5px;color:#5A6285;text-transform:uppercase;margin:8px 0 5px 4px}
 
 /* ── CTA ──────────────────────────────────────────────────────── */
 .cta-wrap{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;padding:10px 12px 20px;background:linear-gradient(to top,#0B0E1A 60%,transparent);pointer-events:none}
@@ -142,8 +143,8 @@ const DATA = {
           f('d_ote','In Internal OTE',1.0),
         ],
         gates:[
-          { id:'gd_mob', question:'Is the price at a mitigated OB?', items:[
-            ng('gd_mob_sl','Is the mitigation OB swept liquidity?',[
+          { id:'gd_mob', question:'Mitigation OB', items:[
+            ng('gd_mob_sl','Swept Liquidity',[
               f('d_mob_sw0','Swept Liquidity',0.8843),
               f('d_mob_sw','Swing',0.865),
               f('d_mob_in','Internal',0.865),
@@ -159,8 +160,8 @@ const DATA = {
             f('d_mob_dsp','Caused Displacement',1.0),
             f('d_mob_flp','Flip Zone',1.0),
           ]},
-          { id:'gd_ls', question:'Did the daily sweep any liquidity?', items:[
-            ng('gd_ls_sl','Is there a structural liquidity sweep?',[
+          { id:'gd_ls', question:'Liquidity Sweep', items:[
+            ng('gd_ls_sl','Structural Liquidity',[
               f('d_ls_sw','Swing',1.239),
               f('d_ls_in','Internal',1.239),
               f('d_ls_fr','Fractal',1.239),
@@ -170,8 +171,8 @@ const DATA = {
             f('d_ls_eq','Equals',1.1),
             f('d_ls_fvg','FVG',0.996),
           ]},
-          { id:'gd_obt', question:'Does the daily have an OB to target?', items:[
-            ng('gd_obt_sl','Is the daily target OB swept liquidity?',[
+          { id:'gd_obt', question:'OB Target', items:[
+            ng('gd_obt_sl','Swept Liquidity',[
               f('d_obt_sw0','Swept Liquidity',0.976),
               f('d_obt_sw','Swing',0.972),
               f('d_obt_in','Internal',0.972),
@@ -187,11 +188,11 @@ const DATA = {
             f('d_obt_dsp','Caused Displacement',1.0),
             f('d_obt_flp','Flip Zone',1.0),
           ]},
-          { id:'gd_lt', question:'Does the daily have liquidity to target?', items:[
+          { id:'gd_lt', question:'Liquidity Target', items:[
             f('d_lt_eq','Equals',0.851),
             f('d_lt_lrl','Low Resistance Liquidity',0.948),
             f('d_lt_fvg','FVG Liquidity',1.213),
-            ng('gd_lt_sl','Is there a structural liquidity to target?',[
+            ng('gd_lt_sl','Structural Liquidity',[
               f('d_lt_sw','Swing',0.783),
               f('d_lt_in','Internal',0.783),
               f('d_lt_fr','Fractal',0.783),
@@ -210,8 +211,8 @@ const DATA = {
           f('h4_otei','Price in Internal OTE',1.0),
         ],
         gates:[
-          { id:'g4_mob', question:'Is there a 4H Mitigation OB?', items:[
-            ng('g4_mob_sl','Is the mitigation OB swept liquidity?',[
+          { id:'g4_mob', question:'Mitigation OB', items:[
+            ng('g4_mob_sl','Swept Liquidity',[
               f('h4_mob_sw0','Swept Liquidity',0.67),
               f('h4_mob_sw','Swing',0.615),
               f('h4_mob_in','Internal',0.615),
@@ -228,8 +229,8 @@ const DATA = {
             f('h4_mob_flp','Flip Zone',2.048),
             f('h4_mob_dob','Within Daily OB',1.0),
           ]},
-          { id:'g4_ls', question:'Is there a 4H Liquidity Sweep?', items:[
-            ng('g4_ls_sl','Is there a structural liquidity sweep?',[
+          { id:'g4_ls', question:'Liquidity Sweep', items:[
+            ng('g4_ls_sl','Structural Liquidity',[
               f('h4_ls_sw','Swing',0.839),
               f('h4_ls_in','Internal',0.839),
               f('h4_ls_fr','Fractal',0.839),
@@ -239,8 +240,8 @@ const DATA = {
             f('h4_ls_eq','Equals',0.853),
             f('h4_ls_fvg','FVG',1.216),
           ]},
-          { id:'g4_obt', question:'Is there a 4H OB Target?', items:[
-            ng('g4_obt_sl','Is the 4H target OB swept liquidity?',[
+          { id:'g4_obt', question:'OB Target', items:[
+            ng('g4_obt_sl','Swept Liquidity',[
               f('h4_obt_sw0','Swept Liquidity',1.2177),
               f('h4_obt_sw','Swing',1.254),
               f('h4_obt_in','Internal',1.254),
@@ -257,11 +258,11 @@ const DATA = {
             f('h4_obt_flp','Flip Zone',1.0),
             f('h4_obt_dob','Within Daily OB',1.0),
           ]},
-          { id:'g4_lt', question:'Is there a 4H Liquidity Target?', items:[
+          { id:'g4_lt', question:'Liquidity Target', items:[
             f('h4_lt_eq','Equals',0.767),
             f('h4_lt_lrl','Low Resistance Liquidity',0.988),
             f('h4_lt_fvg','FVG Liquidity',0.85),
-            ng('g4_lt_sl','Is there a structural liquidity to target?',[
+            ng('g4_lt_sl','Structural Liquidity',[
               f('h4_lt_sw','Swing',0.869),
               f('h4_lt_in','Internal',0.869),
               f('h4_lt_fr','Fractal',0.869),
@@ -279,8 +280,8 @@ const DATA = {
           f('h1_otes','Price in Swing OTE',0.89),
         ],
         gates:[
-          { id:'g1_mob', question:'Is there an H1 Mitigation OB?', items:[
-            ng('g1_mob_sl','Is the mitigation OB swept liquidity?',[
+          { id:'g1_mob', question:'Mitigation OB', items:[
+            ng('g1_mob_sl','Swept Liquidity',[
               f('h1_mob_sw0','Swept Liquidity',1.2794),
               f('h1_mob_sw','Swing',1.326),
               f('h1_mob_in','Internal',1.326),
@@ -297,8 +298,8 @@ const DATA = {
             f('h1_mob_flp','Flip Zone',1.892),
             f('h1_mob_4ob','Within 4H OB',1.0),
           ]},
-          { id:'g1_ls', question:'Is there an H1 Liquidity Sweep?', items:[
-            ng('g1_ls_sl','Is there a structural liquidity sweep?',[
+          { id:'g1_ls', question:'Liquidity Sweep', items:[
+            ng('g1_ls_sl','Structural Liquidity',[
               f('h1_ls_sw','Swing',0.757),
               f('h1_ls_in','Internal',0.757),
               f('h1_ls_fr','Fractal',0.757),
@@ -310,8 +311,8 @@ const DATA = {
             f('h1_ls_asl','Asian Liquidity',1.465),
             f('h1_ls_pdhl','PDH/PDL',1.0),
           ]},
-          { id:'g1_obt', question:'Is there an H1 OB Target?', items:[
-            ng('g1_obt_sl','Is the H1 target OB swept liquidity?',[
+          { id:'g1_obt', question:'OB Target', items:[
+            ng('g1_obt_sl','Swept Liquidity',[
               f('h1_obt_sw0','Swept Liquidity',0.984),
               f('h1_obt_sw','Swing',0.984),
               f('h1_obt_in','Internal',0.984),
@@ -328,13 +329,13 @@ const DATA = {
             f('h1_obt_flp','Flip Zone',0.844),
             f('h1_obt_4ob','Within 4H OB',1.0),
           ]},
-          { id:'g1_lt', question:'Is there an H1 Liquidity Target?', items:[
+          { id:'g1_lt', question:'Liquidity Target', items:[
             f('h1_lt_eq','Equals',1.271),
             f('h1_lt_lrl','Low Resistance Liquidity',1.297),
             f('h1_lt_fvg','FVG Liquidity',1.05),
             f('h1_lt_asl','Asian Liquidity',1.056),
             f('h1_lt_pdhl','PDH/PDL',1.0),
-            ng('g1_lt_sl','Is there a structural liquidity to target?',[
+            ng('g1_lt_sl','Structural Liquidity',[
               f('h1_lt_sw','Swing',0.995),
               f('h1_lt_in','Internal',0.995),
               f('h1_lt_fr','Fractal',0.995),
@@ -395,8 +396,8 @@ const DATA = {
           f('xd_ote','In Internal OTE',0.6226),
         ],
         gates:[
-          { id:'gxd_mob', question:'Is the price at a mitigated OB?', items:[
-            ng('gxd_mob_sl','Is the mitigation OB swept liquidity?',[
+          { id:'gxd_mob', question:'Mitigation OB', items:[
+            ng('gxd_mob_sl','Swept Liquidity',[
               f('xd_mob_sw0','Swept Liquidity',0.9789),
               f('xd_mob_sw','Swing',1.0),
               f('xd_mob_in','Internal',1.0),
@@ -412,8 +413,8 @@ const DATA = {
             f('xd_mob_dsp','Caused Displacement',1.4231),
             f('xd_mob_flp','Flip Zone',1.4232),
           ]},
-          { id:'gxd_ls', question:'Did the daily sweep any liquidity?', items:[
-            ng('gxd_ls_sl','Is there a structural liquidity sweep?',[
+          { id:'gxd_ls', question:'Liquidity Sweep', items:[
+            ng('gxd_ls_sl','Structural Liquidity',[
               f('xd_ls_sw','Swing',1.0474),
               f('xd_ls_in','Internal',1.0421),
               f('xd_ls_fr','Fractal',0.9337),
@@ -423,8 +424,8 @@ const DATA = {
             f('xd_ls_eq','Equals',1.0474),
             f('xd_ls_fvg','FVG',1.5166),
           ]},
-          { id:'gxd_obt', question:'Does the daily have an OB to target?', items:[
-            ng('gxd_obt_sl','Is the daily target OB swept liquidity?',[
+          { id:'gxd_obt', question:'OB Target', items:[
+            ng('gxd_obt_sl','Swept Liquidity',[
               f('xd_obt_sw0','Swept Liquidity',1.1487),
               f('xd_obt_sw','Swing',0.9975),
               f('xd_obt_in','Internal',1.0),
@@ -440,11 +441,11 @@ const DATA = {
             f('xd_obt_dsp','Caused Displacement',1.7513),
             f('xd_obt_flp','Flip Zone',0.8693),
           ]},
-          { id:'gxd_lt', question:'Does the daily have liquidity to target?', items:[
+          { id:'gxd_lt', question:'Liquidity Target', items:[
             f('xd_lt_eq','Equals',0.8912),
             f('xd_lt_lrl','Low Resistance Liquidity',1.0345),
             f('xd_lt_fvg','FVG Liquidity',1.1531),
-            ng('gxd_lt_sl','Is there a structural liquidity to target?',[
+            ng('gxd_lt_sl','Structural Liquidity',[
               f('xd_lt_sw','Swing',0.95),
               f('xd_lt_in','Internal',0.6534),
               f('xd_lt_fr','Fractal',0.9751),
@@ -463,8 +464,8 @@ const DATA = {
           f('xh4_otei','Price in Internal OTE',0.975),
         ],
         gates:[
-          { id:'gx4_mob', question:'Is there a 4H Mitigation OB?', items:[
-            ng('gx4_mob_sl','Is the mitigation OB swept liquidity?',[
+          { id:'gx4_mob', question:'Mitigation OB', items:[
+            ng('gx4_mob_sl','Swept Liquidity',[
               f('xh4_mob_sw0','Swept Liquidity',1.0887),
               f('xh4_mob_sw','Swing',0.95),
               f('xh4_mob_in','Internal',0.95),
@@ -481,8 +482,8 @@ const DATA = {
             f('xh4_mob_flp','Flip Zone',0.8543),
             f('xh4_mob_dob','Within Daily OB',0.7361),
           ]},
-          { id:'gx4_ls', question:'Is there a 4H Liquidity Sweep?', items:[
-            ng('gx4_ls_sl','Is there a structural liquidity sweep?',[
+          { id:'gx4_ls', question:'Liquidity Sweep', items:[
+            ng('gx4_ls_sl','Structural Liquidity',[
               f('xh4_ls_sw','Swing',1.05),
               f('xh4_ls_in','Internal',0.9975),
               f('xh4_ls_fr','Fractal',1.0342),
@@ -492,8 +493,8 @@ const DATA = {
             f('xh4_ls_eq','Equals',1.0447),
             f('xh4_ls_fvg','FVG',1.0754),
           ]},
-          { id:'gx4_obt', question:'Is there a 4H OB Target?', items:[
-            ng('gx4_obt_sl','Is the 4H target OB swept liquidity?',[
+          { id:'gx4_obt', question:'OB Target', items:[
+            ng('gx4_obt_sl','Swept Liquidity',[
               f('xh4_obt_sw0','Swept Liquidity',1.0783),
               f('xh4_obt_sw','Swing',0.95),
               f('xh4_obt_in','Internal',1.0448),
@@ -510,11 +511,11 @@ const DATA = {
             f('xh4_obt_flp','Flip Zone',1.1736),
             f('xh4_obt_dob','Within Daily OB',1.0619),
           ]},
-          { id:'gx4_lt', question:'Is there a 4H Liquidity Target?', items:[
+          { id:'gx4_lt', question:'Liquidity Target', items:[
             f('xh4_lt_eq','Equals',1.1827),
             f('xh4_lt_lrl','Low Resistance Liquidity',1.0422),
             f('xh4_lt_fvg','FVG Liquidity',1.3418),
-            ng('gx4_lt_sl','Is there a structural liquidity to target?',[
+            ng('gx4_lt_sl','Structural Liquidity',[
               f('xh4_lt_sw','Swing',1.0474),
               f('xh4_lt_in','Internal',1.3071),
               f('xh4_lt_fr','Fractal',1.0269),
@@ -532,8 +533,8 @@ const DATA = {
           f('xh1_otes','Price in Swing OTE',0.7999),
         ],
         gates:[
-          { id:'gx1_mob', question:'Is there an H1 Mitigation OB?', items:[
-            ng('gx1_mob_sl','Is the mitigation OB swept liquidity?',[
+          { id:'gx1_mob', question:'Mitigation OB', items:[
+            ng('gx1_mob_sl','Swept Liquidity',[
               f('xh1_mob_sw0','Swept Liquidity',1.2569),
               f('xh1_mob_sw','Swing',1.2333),
               f('xh1_mob_in','Internal',1.1576),
@@ -551,8 +552,8 @@ const DATA = {
             f('xh1_mob_flp','Flip Zone',0.7579),
             f('xh1_mob_4ob','Within 4H OB',0.8382),
           ]},
-          { id:'gx1_ls', question:'Is there an H1 Liquidity Sweep?', items:[
-            ng('gx1_ls_sl','Is there a structural liquidity sweep?',[
+          { id:'gx1_ls', question:'Liquidity Sweep', items:[
+            ng('gx1_ls_sl','Structural Liquidity',[
               f('xh1_ls_sw','Swing',1.0),
               f('xh1_ls_in','Internal',1.2636),
               f('xh1_ls_fr','Fractal',0.9851),
@@ -564,8 +565,8 @@ const DATA = {
             f('xh1_ls_asl','Asian Liquidity',1.1265),
             f('xh1_ls_pdhl','PDH/PDL',1.1709),
           ]},
-          { id:'gx1_obt', question:'Is there an H1 OB Target?', items:[
-            ng('gx1_obt_sl','Is the H1 target OB swept liquidity?',[
+          { id:'gx1_obt', question:'OB Target', items:[
+            ng('gx1_obt_sl','Swept Liquidity',[
               f('xh1_obt_sw0','Swept Liquidity',1.0886),
               f('xh1_obt_sw','Swing',1.0),
               f('xh1_obt_in','Internal',0.9975),
@@ -583,13 +584,13 @@ const DATA = {
             f('xh1_obt_flp','Flip Zone',1.6208),
             f('xh1_obt_4ob','Within 4H OB',1.2005),
           ]},
-          { id:'gx1_lt', question:'Is there an H1 Liquidity Target?', items:[
+          { id:'gx1_lt', question:'Liquidity Target', items:[
             f('xh1_lt_eq','Equals',1.8573),
             f('xh1_lt_lrl','Low Resistance Liquidity',1.0395),
             f('xh1_lt_fvg','FVG Liquidity',1.129),
             f('xh1_lt_asl','Asian Liquidity',1.129),
             f('xh1_lt_pdhl','PDH/PDL',0.738),
-            ng('gx1_lt_sl','Is there a structural liquidity to target?',[
+            ng('gx1_lt_sl','Structural Liquidity',[
               f('xh1_lt_sw','Swing',1.0369),
               f('xh1_lt_in','Internal',1.0251),
               f('xh1_lt_fr','Fractal',1.1148),
@@ -696,15 +697,18 @@ function getProbs() {
   };
 }
 
-function pColor(v) {
+function pColor(inst, v) {
   if (v === null) return '';
-  if (v >= 1.0) return 'green';
-  if (v < 0.85) return 'red';
-  return 'amber';
+  const threshold = inst === 'xau' ? 0.50 : 0.57;
+  return v >= threshold ? 'green' : 'red';
 }
 
 function pFmt(v) {
-  return v === null ? '—' : v.toFixed(3);
+  return v === null ? '—' : (v * 100).toFixed(1) + '%';
+}
+
+function pThreshold(inst) {
+  return inst === 'xau' ? '50%' : '57%';
 }
 
 // ─── RENDERING ─────────────────────────────────────────────────────────────
@@ -799,11 +803,11 @@ function renderHeader(showEntry) {
       <div class="prob-bar">
         <div class="prob-chip">
           <span class="prob-chip-lbl">DIR</span>
-          <span id="pdir" class="prob-chip-val ${pColor(p.dir)}">${pFmt(p.dir)}</span>
+          <span id="pdir" class="prob-chip-val ${pColor(S.inst, p.dir)}">${pFmt(p.dir)}</span>
         </div>
         <div class="prob-chip">
           <span class="prob-chip-lbl">TRADE</span>
-          <span id="ptrd" class="prob-chip-val ${pColor(p.trd)}">${pFmt(p.trd)}</span>
+          <span id="ptrd" class="prob-chip-val ${pColor(S.inst, p.trd)}">${pFmt(p.trd)}</span>
         </div>
       </div>
     </div>
@@ -858,13 +862,13 @@ function renderResults() {
     <div class="res-cards">
       <div class="res-card">
         <div class="res-card-lbl">Directional Probability</div>
-        <div class="res-card-val ${pColor(p.dir)}">${pFmt(p.dir)}</div>
-        <div class="res-card-meta">${p.dirN} confluence factor${p.dirN!==1?'s':''} selected</div>
+        <div class="res-card-val ${pColor(S.inst, p.dir)}">${pFmt(p.dir)}</div>
+        <div class="res-card-meta">${p.dirN} confluence factor${p.dirN!==1?'s':''} · threshold ${pThreshold(S.inst)}</div>
       </div>
       <div class="res-card">
         <div class="res-card-lbl">Trade Probability</div>
-        <div class="res-card-val ${pColor(p.trd)}">${pFmt(p.trd)}</div>
-        <div class="res-card-meta">${p.trdN} total factor${p.trdN!==1?'s':''} selected${S.model?' · '+S.model:''}</div>
+        <div class="res-card-val ${pColor(S.inst, p.trd)}">${pFmt(p.trd)}</div>
+        <div class="res-card-meta">${p.trdN} total factor${p.trdN!==1?'s':''} · threshold ${pThreshold(S.inst)}${S.model?' · '+S.model:''}</div>
       </div>
     </div>
     <div class="res-actions">
@@ -928,8 +932,8 @@ function updateChips() {
   const p = getProbs();
   const pd = document.getElementById('pdir');
   const pt = document.getElementById('ptrd');
-  if (pd) { pd.textContent = pFmt(p.dir); pd.className = 'prob-chip-val ' + pColor(p.dir); }
-  if (pt) { pt.textContent = pFmt(p.trd); pt.className = 'prob-chip-val ' + pColor(p.trd); }
+  if (pd) { pd.textContent = pFmt(p.dir); pd.className = 'prob-chip-val ' + pColor(S.inst, p.dir); }
+  if (pt) { pt.textContent = pFmt(p.trd); pt.className = 'prob-chip-val ' + pColor(S.inst, p.trd); }
 }
 
 // ─── ACTIONS ───────────────────────────────────────────────────────────────
