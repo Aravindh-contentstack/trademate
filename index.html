@@ -767,7 +767,7 @@ function collectAll(inclEntry) {
     for (const fitem of ef) {
       if (fitem.type === 'gate-factor') {
         const d = S.fac[fitem.id];
-        if (d) acc.push({ w:fitem.weight, d });
+        if (d === 'neg') acc.push({ w:fitem.weight, d });   // only No applies gate weight
         if (S.gates[fitem.id] === true) collectItems(fitem.items, acc);
       } else {
         const d = S.fac[fitem.id];
@@ -1256,7 +1256,7 @@ function buildReportMarkdown() {
     DATA[S.inst].entry[S.model].forEach(function(fi) {
       if (fi.type === 'gate-factor') {
         var d = S.fac[fi.id];
-        if (d) lines.push('| ' + fi.question + ' | ' + yn(d) + ' | ' + fi.weight.toFixed(4) + ' |');
+        if (d === 'neg') lines.push('| ' + fi.question + ' | No | ' + fi.weight.toFixed(4) + ' |');
         if (S.gates[fi.id] === true) {
           fi.items.forEach(function(sub) {
             if (sub.type !== 'factor') return;
