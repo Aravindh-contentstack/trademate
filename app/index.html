@@ -1030,7 +1030,12 @@ function renderHome() {
   </div>`;
 }
 
+function saveState() {
+  try { localStorage.setItem('tm_state', JSON.stringify({inst:S.inst,step:S.step,fac:S.fac,gates:S.gates,model:S.model})); } catch(e) {}
+}
+
 function render() {
+  saveState();
   const app = document.getElementById('app');
   if (S.step === 'home') {
     app.innerHTML = renderHome();
@@ -1195,6 +1200,7 @@ function startInst(inst) {
 
 function goHome() {
   S.step = 'home';
+  localStorage.removeItem('tm_state');
   render();
   stopSSE();
 }
@@ -1329,6 +1335,19 @@ function closeModal() {
 }
 
 // ─── INIT ──────────────────────────────────────────────────────────────────
+(function restoreState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('tm_state') || 'null');
+    if (saved && saved.inst && saved.step && saved.step !== 'home') {
+      S.inst = saved.inst;
+      S.step = saved.step;
+      S.fac = saved.fac || {};
+      S.gates = saved.gates || {};
+      S.model = saved.model || null;
+      startSSE(S.inst);
+    }
+  } catch(e) {}
+})();
 render();
 
 if ('serviceWorker' in navigator) {
