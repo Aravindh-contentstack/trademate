@@ -46,7 +46,7 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 .step-tab.active{color:#4D7EF7;background:rgba(77,126,247,.12)}
 
 /* ── SCROLL BODY ──────────────────────────────────────────────── */
-.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 12px 120px}
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 12px 180px}
 
 /* ── SECTION TITLES ───────────────────────────────────────────── */
 .sec-ttl{font-size:11px;font-weight:700;letter-spacing:.8px;color:#4D5880;text-transform:uppercase;margin:0 0 4px 2px}
@@ -94,6 +94,8 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 .cta-wrap{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;padding:10px 12px 20px;background:linear-gradient(to top,#0B0E1A 60%,transparent);pointer-events:none}
 .cta-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4D7EF7,#3B6AE8);border:none;border-radius:12px;color:#fff;font-size:20px;font-weight:700;letter-spacing:.2px;pointer-events:all}
 .cta-btn:active{opacity:.85}
+.cta-back-btn{width:100%;padding:10px;background:transparent;border:1px solid #252C45;border-radius:12px;color:#6B7599;font-size:16px;font-weight:600;pointer-events:all;margin-top:6px}
+.cta-back-btn:active{opacity:.7}
 
 /* ── ENTRY MODEL TABS ─────────────────────────────────────────── */
 .model-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
@@ -135,6 +137,7 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 const f = (id, label, w) => ({ type:'factor', id, label, weight:w })
 const ng = (id, q, items) => ({ type:'nested-gate', id, question:q, items })
 const lbl = t => ({ type:'label', text:t })
+const gf = (id, q, w, items) => ({ type:'gate-factor', id, question:q, weight:w, items })
 
 // ─── DATA ──────────────────────────────────────────────────────────────────
 const DATA = {
@@ -360,6 +363,10 @@ const DATA = {
         f('e_lc1_fvg','LID with FVG',1.0),
         f('e_lc1_ni','No imbalance while mitigation',1.019),
         f('e_lc1_nl','No other LIDs',0.97),
+        gf('e_m15_liq','M15 Target Liquidity',1.0,[
+          f('e_m15_lrl','LRLQ',1.0),
+          f('e_m15_eq','Equals',1.0),
+        ]),
       ],
       'LC-2A':[
         f('e_lc2a_fb','Fake break with body close',0.95),
@@ -367,6 +374,10 @@ const DATA = {
         f('e_lc2a_fr','H1 OB is fractal',1.0),
         f('e_lc2a_fvg','LID with FVG',1.0),
         f('e_lc2a_nl','No other LIDs',1.102),
+        gf('e_m15_liq','M15 Target Liquidity',1.0,[
+          f('e_m15_lrl','LRLQ',1.0),
+          f('e_m15_eq','Equals',1.0),
+        ]),
       ],
       'LC-2B':[
         f('e_lc2b_ea','Equals formed with less angle',0.999),
@@ -374,6 +385,10 @@ const DATA = {
         f('e_lc2b_fvg','LID with FVG',1.0),
         f('e_lc2b_wp','Wicked the PBID',1.05),
         f('e_lc2b_nl','No other LIDs',1.05),
+        gf('e_m15_liq','M15 Target Liquidity',1.0,[
+          f('e_m15_lrl','LRLQ',1.0),
+          f('e_m15_eq','Equals',1.0),
+        ]),
       ],
       'CE':[
         f('e_ce_ib','IBos with body close',1.025),
@@ -382,11 +397,16 @@ const DATA = {
         f('e_ce_ind','Has inducements',0.975),
         f('e_ce_sl','Swept Liquidity',0.975),
         f('e_ce_nl','No other LIDs',1.025),
+        gf('e_m15_liq','M15 Target Liquidity',1.0,[
+          f('e_m15_lrl','LRLQ',1.0),
+          f('e_m15_eq','Equals',1.0),
+        ]),
       ],
       'M15':[
-        f('e_m15_liq','Target Liquidity',1.0),
-        f('e_m15_lrl','Target Liq LRLQ',1.0),
-        f('e_m15_eq','Target Liq Equals',1.0),
+        gf('e_m15_liq','M15 Target Liquidity',1.0,[
+          f('e_m15_lrl','LRLQ',1.0),
+          f('e_m15_eq','Equals',1.0),
+        ]),
       ],
     }
   },
@@ -615,6 +635,10 @@ const DATA = {
         f('xe_lc1_fvg','LID with FVG',1.1503),
         f('xe_lc1_ni','No imbalance while mitigation',1.7165),
         f('xe_lc1_nl','No other LIDs',1.4051),
+        gf('xe_m15_liq','M15 Target Liquidity',0.9348,[
+          f('xe_m15_lrl','LRLQ',1.5284),
+          f('xe_m15_eq','Equals',1.0916),
+        ]),
       ],
       'LC-2A':[
         f('xe_lc2a_fb','Fake break with body close',1.2418),
@@ -622,6 +646,10 @@ const DATA = {
         f('xe_lc2a_fr','H1 OB is fractal',0.9194),
         f('xe_lc2a_fvg','LID with FVG',0.9197),
         f('xe_lc2a_nl','No other LIDs',1.3723),
+        gf('xe_m15_liq','M15 Target Liquidity',0.9348,[
+          f('xe_m15_lrl','LRLQ',1.5284),
+          f('xe_m15_eq','Equals',1.0916),
+        ]),
       ],
       'LC-2B':[
         f('xe_lc2b_ea','Equals formed with less angle',1.0998),
@@ -629,6 +657,10 @@ const DATA = {
         f('xe_lc2b_fvg','LID with FVG',1.0998),
         f('xe_lc2b_wp','Wicked the PBID',0.9002),
         f('xe_lc2b_nl','No other LIDs',1.1576),
+        gf('xe_m15_liq','M15 Target Liquidity',0.9348,[
+          f('xe_m15_lrl','LRLQ',1.5284),
+          f('xe_m15_eq','Equals',1.0916),
+        ]),
       ],
       'CE':[
         f('xe_ce_ib','IBos with body close',0.8382),
@@ -637,11 +669,16 @@ const DATA = {
         f('xe_ce_ind','Has inducements',1.2478),
         f('xe_ce_sl','Swept Liquidity',1.3795),
         f('xe_ce_nl','No other LIDs',0.9728),
+        gf('xe_m15_liq','M15 Target Liquidity',0.9348,[
+          f('xe_m15_lrl','LRLQ',1.5284),
+          f('xe_m15_eq','Equals',1.0916),
+        ]),
       ],
       'M15':[
-        f('xe_m15_liq','Target Liquidity',0.9348),
-        f('xe_m15_lrl','Target Liq LRLQ',1.5284),
-        f('xe_m15_eq','Target Liq Equals',1.0916),
+        gf('xe_m15_liq','M15 Target Liquidity',0.9348,[
+          f('xe_m15_lrl','LRLQ',1.5284),
+          f('xe_m15_eq','Equals',1.0916),
+        ]),
       ],
     }
   }
@@ -739,8 +776,14 @@ function collectAll(inclEntry) {
   if (inclEntry && S.model) {
     const ef = data.entry[S.model] || [];
     for (const fitem of ef) {
-      const d = S.fac[fitem.id];
-      if (d) acc.push({ w:fitem.weight, d });
+      if (fitem.type === 'gate-factor') {
+        const d = S.fac[fitem.id];
+        if (d) acc.push({ w:fitem.weight, d });
+        if (S.gates[fitem.id] === true) collectItems(fitem.items, acc);
+      } else {
+        const d = S.fac[fitem.id];
+        if (d) acc.push({ w:fitem.weight, d });
+      }
     }
   }
   return acc;
@@ -794,6 +837,24 @@ function renderFR(fitem, depth) {
     <div class="fr-btns">
       <button class="fb fbp" onclick="sf('${fitem.id}','pos',${fitem.weight})">+</button>
       <button class="fb fbn" onclick="sf('${fitem.id}','neg',${fitem.weight})">−</button>
+    </div>
+  </div>`;
+}
+
+function renderGateFactor(item) {
+  const open = S.gates[item.id] === true;
+  const d = S.fac[item.id];
+  const yn = d === 'pos' ? true : d === 'neg' ? false : undefined;
+  return `<div class="gate">
+    <div class="gate-head">
+      <div class="gate-q">${item.question}</div>
+      <div class="gate-btns">
+        <button class="gbtn${yn===true?' gy':''}" onclick="sgf('${item.id}',true)">Yes</button>
+        <button class="gbtn${yn===false?' gn':''}" onclick="sgf('${item.id}',false)">No</button>
+      </div>
+    </div>
+    <div id="gfb_${item.id}" class="gate-body${open?' open':''}">
+      ${open ? renderItems(item.items, 1) : ''}
     </div>
   </div>`;
 }
@@ -885,6 +946,11 @@ function renderSection(sk) {
   const idx = STEPS.indexOf(sk);
   const next = STEPS[idx+1] || 'results';
   const nextLabel = next === 'results' ? 'View Results' : STEP_LABELS[next];
+  const prev = idx > 0 ? STEPS[idx-1] : null;
+  const prevLabel = prev ? STEP_LABELS[prev] : null;
+  const backBtn = prev
+    ? `<button class="cta-back-btn" onclick="nav('${prev}')">← Back to ${prevLabel}</button>`
+    : '';
   const alwaysH = sec.always.map(fi => renderFR(fi, 0)).join('');
   const gatesH = renderGates(sec.gates);
   return `<div class="scroll-body">
@@ -895,6 +961,7 @@ function renderSection(sk) {
   </div>
   <div class="cta-wrap">
     <button class="cta-btn" onclick="nav('${next}')">Continue to ${nextLabel} →</button>
+    ${backBtn}
   </div>`;
 }
 
@@ -905,7 +972,9 @@ function renderEntry() {
   ).join('');
   let factorsH = '';
   if (S.model) {
-    factorsH = DATA[S.inst].entry[S.model].map(fi => renderFR(fi, 0)).join('');
+    factorsH = DATA[S.inst].entry[S.model].map(fi =>
+      fi.type === 'gate-factor' ? renderGateFactor(fi) : renderFR(fi, 0)
+    ).join('');
   } else {
     factorsH = `<div style="color:#3E4870;font-size:13px;padding:20px 4px">Select an entry model above to view its factors.</div>`;
   }
@@ -1052,6 +1121,38 @@ function ssg(id, val) {
   schedulePush();
 }
 
+function sgf(id, val) {
+  S.fac[id] = val ? 'pos' : 'neg';
+  S.gates[id] = val;
+  const body = document.getElementById('gfb_' + id);
+  const head = body && body.previousElementSibling;
+  if (body) {
+    body.className = 'gate-body' + (val ? ' open' : '');
+    if (val && !body.innerHTML.trim()) {
+      const item = findGateFactor(id);
+      if (item) body.innerHTML = renderItems(item.items, 1);
+    }
+  }
+  if (head) {
+    const btns = head.querySelectorAll('.gbtn');
+    if (btns[0]) btns[0].className = 'gbtn' + (val === true ? ' gy' : '');
+    if (btns[1]) btns[1].className = 'gbtn' + (val === false ? ' gn' : '');
+  }
+  updateChips();
+  schedulePush();
+}
+
+function findGateFactor(id) {
+  if (!S.inst) return null;
+  const entry = DATA[S.inst].entry;
+  for (const model of Object.values(entry)) {
+    for (const item of model) {
+      if (item.type === 'gate-factor' && item.id === id) return item;
+    }
+  }
+  return null;
+}
+
 function findGate(id) {
   if (!S.inst) return null;
   const data = DATA[S.inst];
@@ -1161,8 +1262,20 @@ function buildReportMarkdown() {
   if (S.model && DATA[S.inst].entry[S.model]) {
     lines.push('| **Entry: ' + S.model + '** | — | — |');
     DATA[S.inst].entry[S.model].forEach(function(fi) {
-      var d = S.fac[fi.id];
-      if (d) lines.push('| ' + fi.label + ' | ' + yn(d) + ' | ' + fi.weight.toFixed(4) + ' |');
+      if (fi.type === 'gate-factor') {
+        var d = S.fac[fi.id];
+        if (d) lines.push('| ' + fi.question + ' | ' + yn(d) + ' | ' + fi.weight.toFixed(4) + ' |');
+        if (S.gates[fi.id] === true) {
+          fi.items.forEach(function(sub) {
+            if (sub.type !== 'factor') return;
+            var ds = S.fac[sub.id];
+            if (ds) lines.push('| ' + IND + sub.label + ' | ' + yn(ds) + ' | ' + sub.weight.toFixed(4) + ' |');
+          });
+        }
+      } else {
+        var d = S.fac[fi.id];
+        if (d) lines.push('| ' + fi.label + ' | ' + yn(d) + ' | ' + fi.weight.toFixed(4) + ' |');
+      }
     });
   }
 
