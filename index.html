@@ -41,8 +41,9 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 
 /* ── STEP TABS ────────────────────────────────────────────────── */
 .step-tabs{display:flex;gap:2px;padding:0 0 10px}
-.step-tab{flex:1;text-align:center;font-size:14px;font-weight:600;letter-spacing:.5px;padding:5px 0;border-radius:6px;color:#2E3655}
-.step-tab.done{color:#2DD4A0}
+.step-tab{flex:1;text-align:center;font-size:14px;font-weight:600;letter-spacing:.5px;padding:5px 0;border-radius:6px;color:#2E3655;cursor:default}
+.step-tab.done{color:#2DD4A0;cursor:pointer}
+.step-tab.done:active{opacity:.7}
 .step-tab.active{color:#4D7EF7;background:rgba(77,126,247,.12)}
 
 /* ── SCROLL BODY ──────────────────────────────────────────────── */
@@ -921,7 +922,9 @@ function renderHeader(showEntry) {
   const p = getProbs();
   const tabs = STEPS.map(s => {
     const st = stepState(s);
-    return `<div class="step-tab${st?' '+st:''}">${STEP_LABELS[s]}</div>`;
+    const clickable = st === 'done' || st === 'active';
+    const onclick = clickable ? ` onclick="nav('${s}')"` : '';
+    return `<div class="step-tab${st?' '+st:''}"${onclick}>${STEP_LABELS[s]}</div>`;
   }).join('');
   return `<div class="header">
     <div class="header-top">
@@ -985,6 +988,7 @@ function renderEntry() {
   </div>
   <div class="cta-wrap">
     <button class="cta-btn" onclick="nav('results')">View Results →</button>
+    <button class="cta-back-btn" onclick="nav('h1')">← Back to H1</button>
   </div>`;
 }
 
