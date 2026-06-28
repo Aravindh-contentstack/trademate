@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0B0E1A">
+<title>TradeMate</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overscroll-behavior:none}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0B0E1A;color:#E6EAF5;max-width:480px;margin:0 auto;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
+
+/* ── HOME ─────────────────────────────────────────────────────── */
+.home{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;gap:32px;overflow-y:auto}
+.home-logo{font-size:32px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#4D7EF7,#2DD4A0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.home-sub{font-size:14px;color:#4D5880;text-align:center;line-height:1.5;margin-top:-20px}
+.inst-cards{display:flex;flex-direction:column;gap:12px;width:100%}
+.inst-card{padding:20px 24px;background:#13172A;border:1px solid #252C45;border-radius:16px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;align-items:center;justify-content:space-between}
+.inst-card:active{background:#1A1F35;border-color:#4D7EF7}
+.inst-card-name{font-size:18px;font-weight:700;letter-spacing:-.3px}
+.inst-card-tag{font-size:12px;color:#4D5880;margin-top:2px}
+.inst-card-arrow{color:#4D5880;font-size:18px}
+
+/* ── HEADER ───────────────────────────────────────────────────── */
+.header{position:sticky;top:0;z-index:100;background:rgba(11,14,26,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #1A1F35;padding:10px 12px 0;flex-shrink:0}
+.header-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.back-btn{background:none;border:none;color:#4D5880;font-size:13px;padding:4px 0;display:flex;align-items:center;gap:4px;flex-shrink:0}
+.back-btn:active{color:#E6EAF5}
+.prob-bar{display:flex;gap:6px;margin-left:auto}
+.prob-chip{display:flex;align-items:center;gap:5px;background:#13172A;border:1px solid #252C45;border-radius:8px;padding:4px 10px}
+.prob-chip-lbl{font-size:10px;color:#4D5880;font-weight:600;letter-spacing:.4px}
+.prob-chip-val{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:#4D7EF7}
+.prob-chip-val.green{color:#2DD4A0}
+.prob-chip-val.amber{color:#F5A623}
+.prob-chip-val.red{color:#F06969}
+
+/* ── STEP TABS ────────────────────────────────────────────────── */
+.step-tabs{display:flex;gap:2px;padding:0 0 10px}
+.step-tab{flex:1;text-align:center;font-size:11px;font-weight:600;letter-spacing:.5px;padding:5px 0;border-radius:6px;color:#2E3655}
+.step-tab.done{color:#2DD4A0}
+.step-tab.active{color:#4D7EF7;background:rgba(77,126,247,.12)}
+
+/* ── SCROLL BODY ──────────────────────────────────────────────── */
+.scroll-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 12px 90px}
+
+/* ── SECTION TITLES ───────────────────────────────────────────── */
+.sec-ttl{font-size:11px;font-weight:700;letter-spacing:.8px;color:#4D5880;text-transform:uppercase;margin:0 0 4px 2px}
+.sec-sub{font-size:12px;color:#2E3655;margin-bottom:12px}
+.grp-lbl{font-size:11px;font-weight:600;letter-spacing:.5px;color:#3E4870;text-transform:uppercase;margin:14px 0 6px 2px}
+
+/* ── FACTOR ROWS ──────────────────────────────────────────────── */
+.fr{display:flex;align-items:center;min-height:46px;padding:0 4px 0 12px;background:#13172A;border:1px solid #252C45;border-radius:10px;margin-bottom:5px;gap:6px;transition:border-color .12s,background .12s}
+.fr.n1{background:#16192E;border-color:#21274A}
+.fr.n2{background:#1A1E34;border-color:#252C45}
+.fr.ap{border-color:#2DD4A0;background:linear-gradient(135deg,rgba(45,212,160,.08),#13172A)}
+.fr.n1.ap{background:linear-gradient(135deg,rgba(45,212,160,.08),#16192E)}
+.fr.n2.ap{background:linear-gradient(135deg,rgba(45,212,160,.08),#1A1E34)}
+.fr.an{border-color:#F06969;background:linear-gradient(135deg,rgba(240,105,105,.08),#13172A)}
+.fr.n1.an{background:linear-gradient(135deg,rgba(240,105,105,.08),#16192E)}
+.fr.n2.an{background:linear-gradient(135deg,rgba(240,105,105,.08),#1A1E34)}
+.fr-name{flex:1;font-size:13.5px;line-height:1.3}
+.fr-wt{font-size:10px;font-family:ui-monospace,monospace;color:#2E3655;flex-shrink:0;min-width:36px;text-align:right}
+.fr-btns{display:flex;gap:3px;flex-shrink:0}
+.fb{width:34px;height:34px;border-radius:7px;border:1px solid #252C45;background:transparent;color:#3E4870;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .1s,border-color .1s,color .1s}
+.fb:active{opacity:.7}
+.fr.ap .fb.fbp{background:#2DD4A0;border-color:#2DD4A0;color:#0B0E1A}
+.fr.an .fb.fbn{background:#F06969;border-color:#F06969;color:#0B0E1A}
+
+/* ── GATE SECTIONS ────────────────────────────────────────────── */
+.gate{background:#13172A;border:1px solid #252C45;border-radius:13px;margin-bottom:8px;overflow:hidden}
+.gate-head{display:flex;align-items:center;justify-content:space-between;padding:11px 10px 11px 14px;gap:8px}
+.gate-q{font-size:13px;color:#9DA8C7;flex:1;line-height:1.35}
+.gate-btns{display:flex;gap:5px;flex-shrink:0}
+.gbtn{padding:5px 13px;border-radius:7px;border:1px solid #252C45;background:transparent;color:#4D5880;font-size:12px;font-weight:600}
+.gbtn.gy{border-color:#2DD4A0;color:#2DD4A0;background:rgba(45,212,160,.08)}
+.gbtn.gn{border-color:#3E4870;color:#E6EAF5;background:#1A1F35}
+.gate-body{display:none;padding:0 8px 8px}
+.gate-body.open{display:block}
+
+/* ── SUB-GATE ─────────────────────────────────────────────────── */
+.sg{background:#1A1F35;border:1px solid #252C45;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.sg-head{display:flex;align-items:center;justify-content:space-between;padding:9px 8px 9px 12px;gap:8px}
+.sg-q{font-size:12px;color:#7A86A8;flex:1;line-height:1.3}
+.sg-body{display:none;padding:0 4px 6px}
+.sg-body.open{display:block}
+.grp-sublbl{font-size:10px;font-weight:600;letter-spacing:.5px;color:#2E3655;text-transform:uppercase;margin:8px 0 5px 4px}
+
+/* ── CTA ──────────────────────────────────────────────────────── */
+.cta-wrap{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;padding:10px 12px 20px;background:linear-gradient(to top,#0B0E1A 60%,transparent);pointer-events:none}
+.cta-btn{width:100%;padding:14px;background:linear-gradient(135deg,#4D7EF7,#3B6AE8);border:none;border-radius:12px;color:#fff;font-size:15px;font-weight:700;letter-spacing:.2px;pointer-events:all}
+.cta-btn:active{opacity:.85}
+
+/* ── ENTRY MODEL TABS ─────────────────────────────────────────── */
+.model-tabs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.mtab{padding:7px 12px;background:#13172A;border:1px solid #252C45;border-radius:8px;color:#4D5880;font-size:12px;font-weight:600}
+.mtab.active{background:rgba(77,126,247,.15);border-color:#4D7EF7;color:#4D7EF7}
+
+/* ── RESULTS ──────────────────────────────────────────────────── */
+.res-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.res-card{background:#13172A;border:1px solid #252C45;border-radius:14px;padding:18px 20px}
+.res-card-lbl{font-size:11px;font-weight:600;letter-spacing:.6px;color:#4D5880;text-transform:uppercase;margin-bottom:6px}
+.res-card-val{font-size:42px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-1px;line-height:1}
+.res-card-val.green{color:#2DD4A0}
+.res-card-val.amber{color:#F5A623}
+.res-card-val.red{color:#F06969}
+.res-card-val.dim{color:#3E4870}
+.res-card-meta{font-size:12px;color:#4D5880;margin-top:6px}
+.res-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.res-btn{padding:13px;border-radius:11px;border:1px solid #252C45;background:#13172A;color:#E6EAF5;font-size:14px;font-weight:600}
+.res-btn.primary{background:linear-gradient(135deg,#4D7EF7,#3B6AE8);border-color:transparent;color:#fff}
+.res-btn:active{opacity:.8}
+
+/* ── SCROLLBAR ────────────────────────────────────────────────── */
+.scroll-body::-webkit-scrollbar{width:3px}
+.scroll-body::-webkit-scrollbar-track{background:transparent}
+.scroll-body::-webkit-scrollbar-thumb{background:#252C45;border-radius:2px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ─── DATA HELPERS ──────────────────────────────────────────────────────────
+const f = (id, label, w) => ({ type:'factor', id, label, weight:w })
+const ng = (id, q, items) => ({ type:'nested-gate', id, question:q, items })
+const lbl = t => ({ type:'label', text:t })
+
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const DATA = {
+  eu: {
+    name:'EUR/USD',
+    sections:{
+      daily:{
+        label:'Daily',
+        always:[
+          f('d_sw','Swing',1.979),
+          f('d_in','Internal',0.795),
+          f('d_fr','Fractal',1.91),
+          f('d_ote','In Internal OTE',1.0),
+        ],
+        gates:[
+          { id:'gd_mob', question:'Is the price at a mitigated OB?', items:[
+            ng('gd_mob_sl','Is the mitigation OB swept liquidity?',[
+              f('d_mob_sw0','Swept Liquidity',0.8843),
+              f('d_mob_sw','Swing',0.865),
+              f('d_mob_in','Internal',0.865),
+              f('d_mob_fr','Fractal',0.865),
+              f('d_mob_op','Old Points',0.865),
+              f('d_mob_fvg','FVG Liquidity',0.865),
+              f('d_mob_eq','Equals',0.865),
+              f('d_mob_pc','Previous Candle H/L',1.0),
+            ]),
+            lbl('Other Mitigation OB Factors'),
+            f('d_mob_ind','Has Inducement',1.501),
+            f('d_mob_imb','Caused Imbalance',1.423),
+            f('d_mob_dsp','Caused Displacement',1.0),
+            f('d_mob_flp','Flip Zone',1.0),
+          ]},
+          { id:'gd_ls', question:'Did the daily sweep any liquidity?', items:[
+            ng('gd_ls_sl','Is there a structural liquidity sweep?',[
+              f('d_ls_sw','Swing',1.239),
+              f('d_ls_in','Internal',1.239),
+              f('d_ls_fr','Fractal',1.239),
+              f('d_ls_op','Old Points',1.239),
+            ]),
+            lbl('Other Liquidity Swept'),
+            f('d_ls_eq','Equals',1.1),
+            f('d_ls_fvg','FVG',0.996),
+          ]},
+          { id:'gd_obt', question:'Does the daily have an OB to target?', items:[
+            ng('gd_obt_sl','Is the daily target OB swept liquidity?',[
+              f('d_obt_sw0','Swept Liquidity',0.976),
+              f('d_obt_sw','Swing',0.972),
+              f('d_obt_in','Internal',0.972),
+              f('d_obt_fr','Fractal',0.972),
+              f('d_obt_op','Old Points',0.972),
+              f('d_obt_fvg','FVG Liquidity',0.972),
+              f('d_obt_eq','Equals',0.972),
+              f('d_obt_pc','Previous Candle H/L',1.0),
+            ]),
+            lbl('Other OB Target Factors'),
+            f('d_obt_ind','Has Inducement',0.881),
+            f('d_obt_imb','Caused Imbalance',1.073),
+            f('d_obt_dsp','Caused Displacement',1.0),
+            f('d_obt_flp','Flip Zone',1.0),
+          ]},
+          { id:'gd_lt', question:'Does the daily have liquidity to target?', items:[
+            f('d_lt_eq','Equals',0.851),
+            f('d_lt_lrl','Low Resistance Liquidity',0.948),
+            f('d_lt_fvg','FVG Liquidity',1.213),
+            ng('gd_lt_sl','Is there a structural liquidity to target?',[
+              f('d_lt_sw','Swing',0.783),
+              f('d_lt_in','Internal',0.783),
+              f('d_lt_fr','Fractal',0.783),
+              f('d_lt_op','Old Points',0.783),
+            ]),
+          ]},
+        ]
+      },
+      h4:{
+        label:'4H',
+        always:[
+          f('h4_sw','Swing',0.719),
+          f('h4_in','Internal',0.98),
+          f('h4_fr','Fractal',1.208),
+          f('h4_otes','Price in Swing OTE',0.799),
+          f('h4_otei','Price in Internal OTE',1.0),
+        ],
+        gates:[
+          { id:'g4_mob', question:'Is there a 4H Mitigation OB?', items:[
+            ng('g4_mob_sl','Is the mitigation OB swept liquidity?',[
+              f('h4_mob_sw0','Swept Liquidity',0.67),
+              f('h4_mob_sw','Swing',0.615),
+              f('h4_mob_in','Internal',0.615),
+              f('h4_mob_fr','Fractal',0.615),
+              f('h4_mob_op','Old Points',0.615),
+              f('h4_mob_fvg','FVG Liquidity',0.615),
+              f('h4_mob_eq','Equals',0.615),
+              f('h4_mob_pc','Previous Candle',1.0),
+            ]),
+            lbl('Other Mitigation OB Factors'),
+            f('h4_mob_ind','Has Inducement',1.099),
+            f('h4_mob_imb','Caused Imbalance',0.72),
+            f('h4_mob_dsp','Caused Displacement',1.0),
+            f('h4_mob_flp','Flip Zone',2.048),
+            f('h4_mob_dob','Within Daily OB',1.0),
+          ]},
+          { id:'g4_ls', question:'Is there a 4H Liquidity Sweep?', items:[
+            ng('g4_ls_sl','Is there a structural liquidity sweep?',[
+              f('h4_ls_sw','Swing',0.839),
+              f('h4_ls_in','Internal',0.839),
+              f('h4_ls_fr','Fractal',0.839),
+              f('h4_ls_op','Old Points',0.839),
+            ]),
+            lbl('Other Liquidity Swept'),
+            f('h4_ls_eq','Equals',0.853),
+            f('h4_ls_fvg','FVG',1.216),
+          ]},
+          { id:'g4_obt', question:'Is there a 4H OB Target?', items:[
+            ng('g4_obt_sl','Is the 4H target OB swept liquidity?',[
+              f('h4_obt_sw0','Swept Liquidity',1.2177),
+              f('h4_obt_sw','Swing',1.254),
+              f('h4_obt_in','Internal',1.254),
+              f('h4_obt_fr','Fractal',1.254),
+              f('h4_obt_op','Old Points',1.254),
+              f('h4_obt_fvg','FVG Liquidity',1.254),
+              f('h4_obt_eq','Equals',1.254),
+              f('h4_obt_pc','Previous Candle',1.0),
+            ]),
+            lbl('Other OB Target Factors'),
+            f('h4_obt_ind','Has Inducement',1.026),
+            f('h4_obt_imb','Caused Imbalance',1.133),
+            f('h4_obt_dsp','Caused Displacement',1.0),
+            f('h4_obt_flp','Flip Zone',1.0),
+            f('h4_obt_dob','Within Daily OB',1.0),
+          ]},
+          { id:'g4_lt', question:'Is there a 4H Liquidity Target?', items:[
+            f('h4_lt_eq','Equals',0.767),
+            f('h4_lt_lrl','Low Resistance Liquidity',0.988),
+            f('h4_lt_fvg','FVG Liquidity',0.85),
+            ng('g4_lt_sl','Is there a structural liquidity to target?',[
+              f('h4_lt_sw','Swing',0.869),
+              f('h4_lt_in','Internal',0.869),
+              f('h4_lt_fr','Fractal',0.869),
+              f('h4_lt_op','Old Points',0.869),
+            ]),
+          ]},
+        ]
+      },
+      h1:{
+        label:'H1',
+        always:[
+          f('h1_sw','Swing',1.614),
+          f('h1_in','Internal',1.202),
+          f('h1_fr','Fractal',0.851),
+          f('h1_otes','Price in Swing OTE',0.89),
+        ],
+        gates:[
+          { id:'g1_mob', question:'Is there an H1 Mitigation OB?', items:[
+            ng('g1_mob_sl','Is the mitigation OB swept liquidity?',[
+              f('h1_mob_sw0','Swept Liquidity',1.2794),
+              f('h1_mob_sw','Swing',1.326),
+              f('h1_mob_in','Internal',1.326),
+              f('h1_mob_fr','Fractal',1.326),
+              f('h1_mob_op','Old Points',1.326),
+              f('h1_mob_fvg','FVG Liquidity',1.326),
+              f('h1_mob_eq','Equals',1.326),
+              f('h1_mob_pc','Previous Candle',1.0),
+            ]),
+            lbl('Other Mitigation OB Factors'),
+            f('h1_mob_ind','Has Inducement',1.091),
+            f('h1_mob_imb','Caused Imbalance',1.702),
+            f('h1_mob_dsp','Caused Displacement',1.0),
+            f('h1_mob_flp','Flip Zone',1.892),
+            f('h1_mob_4ob','Within 4H OB',1.0),
+          ]},
+          { id:'g1_ls', question:'Is there an H1 Liquidity Sweep?', items:[
+            ng('g1_ls_sl','Is there a structural liquidity sweep?',[
+              f('h1_ls_sw','Swing',0.757),
+              f('h1_ls_in','Internal',0.757),
+              f('h1_ls_fr','Fractal',0.757),
+              f('h1_ls_op','Old Points',0.757),
+            ]),
+            lbl('Other Liquidity Swept'),
+            f('h1_ls_eq','Equals',0.946),
+            f('h1_ls_fvg','FVG',1.0),
+            f('h1_ls_asl','Asian Liquidity',1.465),
+            f('h1_ls_pdhl','PDH/PDL',1.0),
+          ]},
+          { id:'g1_obt', question:'Is there an H1 OB Target?', items:[
+            ng('g1_obt_sl','Is the H1 target OB swept liquidity?',[
+              f('h1_obt_sw0','Swept Liquidity',0.984),
+              f('h1_obt_sw','Swing',0.984),
+              f('h1_obt_in','Internal',0.984),
+              f('h1_obt_fr','Fractal',0.984),
+              f('h1_obt_op','Old Points',0.984),
+              f('h1_obt_fvg','FVG Liquidity',0.984),
+              f('h1_obt_eq','Equals',0.984),
+              f('h1_obt_pc','Previous Candle',1.0),
+            ]),
+            lbl('Other OB Target Factors'),
+            f('h1_obt_ind','Has Inducement',1.088),
+            f('h1_obt_imb','Caused Imbalance',0.931),
+            f('h1_obt_dsp','Caused Displacement',1.0),
+            f('h1_obt_flp','Flip Zone',0.844),
+            f('h1_obt_4ob','Within 4H OB',1.0),
+          ]},
+          { id:'g1_lt', question:'Is there an H1 Liquidity Target?', items:[
+            f('h1_lt_eq','Equals',1.271),
+            f('h1_lt_lrl','Low Resistance Liquidity',1.297),
+            f('h1_lt_fvg','FVG Liquidity',1.05),
+            f('h1_lt_asl','Asian Liquidity',1.056),
+            f('h1_lt_pdhl','PDH/PDL',1.0),
+            ng('g1_lt_sl','Is there a structural liquidity to target?',[
+              f('h1_lt_sw','Swing',0.995),
+              f('h1_lt_in','Internal',0.995),
+              f('h1_lt_fr','Fractal',0.995),
+              f('h1_lt_op','Old Points',0.995),
+            ]),
+            f('h1_nwog','NWOG',1.6),
+          ]},
+        ]
+      }
+    },
+    entry:{
+      'LC-1':[
+        f('e_lc1_fr','H1 OB is fractal',1.127),
+        f('e_lc1_wk','Wicked the LID',1.072),
+        f('e_lc1_fvg','LID with FVG',1.0),
+        f('e_lc1_ni','No imbalance while mitigation',1.019),
+        f('e_lc1_nl','No other LIDs',0.97),
+      ],
+      'LC-2A':[
+        f('e_lc2a_fb','Fake break with body close',0.95),
+        f('e_lc2a_wp','Wicked the PBID',1.13),
+        f('e_lc2a_fr','H1 OB is fractal',1.0),
+        f('e_lc2a_fvg','LID with FVG',1.0),
+        f('e_lc2a_nl','No other LIDs',1.102),
+      ],
+      'LC-2B':[
+        f('e_lc2b_ea','Equals formed with less angle',0.999),
+        f('e_lc2b_fr','H1 OB is fractal',1.0),
+        f('e_lc2b_fvg','LID with FVG',1.0),
+        f('e_lc2b_wp','Wicked the PBID',1.05),
+        f('e_lc2b_nl','No other LIDs',1.05),
+      ],
+      'CE':[
+        f('e_ce_ib','IBos with body close',1.025),
+        f('e_ce_oi','H1 OB is internal',1.0),
+        f('e_ce_im','Has imbalance',1.025),
+        f('e_ce_ind','Has inducements',0.975),
+        f('e_ce_sl','Swept Liquidity',0.975),
+        f('e_ce_nl','No other LIDs',1.025),
+      ],
+      'M15':[
+        f('e_m15_liq','Target Liquidity',1.0),
+        f('e_m15_lrl','Target Liq LRLQ',1.0),
+        f('e_m15_eq','Target Liq Equals',1.0),
+      ],
+    }
+  },
+
+  xau: {
+    name:'XAU/USD',
+    sections:{
+      daily:{
+        label:'Daily',
+        always:[
+          f('xd_sw','Swing',1.0237),
+          f('xd_in','Internal',0.5615),
+          f('xd_fr','Fractal',1.0242),
+          f('xd_ote','In Internal OTE',0.6226),
+        ],
+        gates:[
+          { id:'gxd_mob', question:'Is the price at a mitigated OB?', items:[
+            ng('gxd_mob_sl','Is the mitigation OB swept liquidity?',[
+              f('xd_mob_sw0','Swept Liquidity',0.9789),
+              f('xd_mob_sw','Swing',1.0),
+              f('xd_mob_in','Internal',1.0),
+              f('xd_mob_fr','Fractal',0.9849),
+              f('xd_mob_op','Old Points',0.95),
+              f('xd_mob_fvg','FVG Liquidity',0.5107),
+              f('xd_mob_eq','Equals',0.9429),
+              f('xd_mob_pc','Previous Candle H/L',0.6391),
+            ]),
+            lbl('Other Mitigation OB Factors'),
+            f('xd_mob_ind','Has Inducement',1.0542),
+            f('xd_mob_imb','Caused Imbalance',1.1649),
+            f('xd_mob_dsp','Caused Displacement',1.4231),
+            f('xd_mob_flp','Flip Zone',1.4232),
+          ]},
+          { id:'gxd_ls', question:'Did the daily sweep any liquidity?', items:[
+            ng('gxd_ls_sl','Is there a structural liquidity sweep?',[
+              f('xd_ls_sw','Swing',1.0474),
+              f('xd_ls_in','Internal',1.0421),
+              f('xd_ls_fr','Fractal',0.9337),
+              f('xd_ls_op','Old Points',0.995),
+            ]),
+            lbl('Other Liquidity Swept'),
+            f('xd_ls_eq','Equals',1.0474),
+            f('xd_ls_fvg','FVG',1.5166),
+          ]},
+          { id:'gxd_obt', question:'Does the daily have an OB to target?', items:[
+            ng('gxd_obt_sl','Is the daily target OB swept liquidity?',[
+              f('xd_obt_sw0','Swept Liquidity',1.1487),
+              f('xd_obt_sw','Swing',0.9975),
+              f('xd_obt_in','Internal',1.0),
+              f('xd_obt_fr','Fractal',1.2699),
+              f('xd_obt_op','Old Points',1.0),
+              f('xd_obt_fvg','FVG Liquidity',1.149),
+              f('xd_obt_eq','Equals',1.0474),
+              f('xd_obt_pc','Previous Candle H/L',1.1291),
+            ]),
+            lbl('Other OB Target Factors'),
+            f('xd_obt_ind','Has Inducement',1.7515),
+            f('xd_obt_imb','Caused Imbalance',1.5846),
+            f('xd_obt_dsp','Caused Displacement',1.7513),
+            f('xd_obt_flp','Flip Zone',0.8693),
+          ]},
+          { id:'gxd_lt', question:'Does the daily have liquidity to target?', items:[
+            f('xd_lt_eq','Equals',0.8912),
+            f('xd_lt_lrl','Low Resistance Liquidity',1.0345),
+            f('xd_lt_fvg','FVG Liquidity',1.1531),
+            ng('gxd_lt_sl','Is there a structural liquidity to target?',[
+              f('xd_lt_sw','Swing',0.95),
+              f('xd_lt_in','Internal',0.6534),
+              f('xd_lt_fr','Fractal',0.9751),
+              f('xd_lt_op','Old Points',1.097),
+            ]),
+          ]},
+        ]
+      },
+      h4:{
+        label:'4H',
+        always:[
+          f('xh4_sw','Swing',0.6204),
+          f('xh4_in','Internal',1.0236),
+          f('xh4_fr','Fractal',1.1315),
+          f('xh4_otes','Price in Swing OTE',0.3403),
+          f('xh4_otei','Price in Internal OTE',0.975),
+        ],
+        gates:[
+          { id:'gx4_mob', question:'Is there a 4H Mitigation OB?', items:[
+            ng('gx4_mob_sl','Is the mitigation OB swept liquidity?',[
+              f('xh4_mob_sw0','Swept Liquidity',1.0887),
+              f('xh4_mob_sw','Swing',0.95),
+              f('xh4_mob_in','Internal',0.95),
+              f('xh4_mob_fr','Fractal',1.2572),
+              f('xh4_mob_op','Old Points',1.0),
+              f('xh4_mob_fvg','FVG Liquidity',1.0781),
+              f('xh4_mob_eq','Equals',1.097),
+              f('xh4_mob_pc','Previous Candle',1.1065),
+            ]),
+            lbl('Other Mitigation OB Factors'),
+            f('xh4_mob_ind','Has Inducement',1.1535),
+            f('xh4_mob_imb','Caused Imbalance',0.9442),
+            f('xh4_mob_dsp','Caused Displacement',1.2743),
+            f('xh4_mob_flp','Flip Zone',0.8543),
+            f('xh4_mob_dob','Within Daily OB',0.7361),
+          ]},
+          { id:'gx4_ls', question:'Is there a 4H Liquidity Sweep?', items:[
+            ng('gx4_ls_sl','Is there a structural liquidity sweep?',[
+              f('xh4_ls_sw','Swing',1.05),
+              f('xh4_ls_in','Internal',0.9975),
+              f('xh4_ls_fr','Fractal',1.0342),
+              f('xh4_ls_op','Old Points',0.8936),
+            ]),
+            lbl('Other Liquidity Swept'),
+            f('xh4_ls_eq','Equals',1.0447),
+            f('xh4_ls_fvg','FVG',1.0754),
+          ]},
+          { id:'gx4_obt', question:'Is there a 4H OB Target?', items:[
+            ng('gx4_obt_sl','Is the 4H target OB swept liquidity?',[
+              f('xh4_obt_sw0','Swept Liquidity',1.0783),
+              f('xh4_obt_sw','Swing',0.95),
+              f('xh4_obt_in','Internal',1.0448),
+              f('xh4_obt_fr','Fractal',1.0421),
+              f('xh4_obt_op','Old Points',1.05),
+              f('xh4_obt_fvg','FVG Liquidity',0.9851),
+              f('xh4_obt_eq','Equals',1.1519),
+              f('xh4_obt_pc','Previous Candle',1.0164),
+            ]),
+            lbl('Other OB Target Factors'),
+            f('xh4_obt_ind','Has Inducement',1.4338),
+            f('xh4_obt_imb','Caused Imbalance',0.8691),
+            f('xh4_obt_dsp','Caused Displacement',1.062),
+            f('xh4_obt_flp','Flip Zone',1.1736),
+            f('xh4_obt_dob','Within Daily OB',1.0619),
+          ]},
+          { id:'gx4_lt', question:'Is there a 4H Liquidity Target?', items:[
+            f('xh4_lt_eq','Equals',1.1827),
+            f('xh4_lt_lrl','Low Resistance Liquidity',1.0422),
+            f('xh4_lt_fvg','FVG Liquidity',1.3418),
+            ng('gx4_lt_sl','Is there a structural liquidity to target?',[
+              f('xh4_lt_sw','Swing',1.0474),
+              f('xh4_lt_in','Internal',1.3071),
+              f('xh4_lt_fr','Fractal',1.0269),
+              f('xh4_lt_op','Old Points',1.0971),
+            ]),
+          ]},
+        ]
+      },
+      h1:{
+        label:'H1',
+        always:[
+          f('xh1_sw','Swing',1.0235),
+          f('xh1_in','Internal',0.9262),
+          f('xh1_fr','Fractal',1.1315),
+          f('xh1_otes','Price in Swing OTE',0.7999),
+        ],
+        gates:[
+          { id:'gx1_mob', question:'Is there an H1 Mitigation OB?', items:[
+            ng('gx1_mob_sl','Is the mitigation OB swept liquidity?',[
+              f('xh1_mob_sw0','Swept Liquidity',1.2569),
+              f('xh1_mob_sw','Swing',1.2333),
+              f('xh1_mob_in','Internal',1.1576),
+              f('xh1_mob_fr','Fractal',0.956),
+              f('xh1_mob_op','Old Points',1.05),
+              f('xh1_mob_fvg','FVG Liquidity',1.4519),
+              f('xh1_mob_eq','Equals',1.1431),
+              f('xh1_mob_tbl','Time Based Liquidity',0.9728),
+              f('xh1_mob_pc','Previous Candle',1.4096),
+            ]),
+            lbl('Other Mitigation OB Factors'),
+            f('xh1_mob_ind','Has Inducement',0.7587),
+            f('xh1_mob_imb','Caused Imbalance',1.0239),
+            f('xh1_mob_dsp','Caused Displacement',0.9266),
+            f('xh1_mob_flp','Flip Zone',0.7579),
+            f('xh1_mob_4ob','Within 4H OB',0.8382),
+          ]},
+          { id:'gx1_ls', question:'Is there an H1 Liquidity Sweep?', items:[
+            ng('gx1_ls_sl','Is there a structural liquidity sweep?',[
+              f('xh1_ls_sw','Swing',1.0),
+              f('xh1_ls_in','Internal',1.2636),
+              f('xh1_ls_fr','Fractal',0.9851),
+              f('xh1_ls_op','Old Points',1.0474),
+            ]),
+            lbl('Other Liquidity Swept'),
+            f('xh1_ls_eq','Equals',1.1519),
+            f('xh1_ls_fvg','FVG',1.5282),
+            f('xh1_ls_asl','Asian Liquidity',1.1265),
+            f('xh1_ls_pdhl','PDH/PDL',1.1709),
+          ]},
+          { id:'gx1_obt', question:'Is there an H1 OB Target?', items:[
+            ng('gx1_obt_sl','Is the H1 target OB swept liquidity?',[
+              f('xh1_obt_sw0','Swept Liquidity',1.0886),
+              f('xh1_obt_sw','Swing',1.0),
+              f('xh1_obt_in','Internal',0.9975),
+              f('xh1_obt_fr','Fractal',0.9003),
+              f('xh1_obt_op','Old Points',1.0),
+              f('xh1_obt_fvg','FVG Liquidity',1.1025),
+              f('xh1_obt_eq','Equals',0.9003),
+              f('xh1_obt_tbl','Time Based Liquidity',0.9975),
+              f('xh1_obt_pc','Previous Candle',0.9358),
+            ]),
+            lbl('Other OB Target Factors'),
+            f('xh1_obt_ind','Has Inducement',1.2003),
+            f('xh1_obt_imb','Caused Imbalance',0.8889),
+            f('xh1_obt_dsp','Caused Displacement',0.9826),
+            f('xh1_obt_flp','Flip Zone',1.6208),
+            f('xh1_obt_4ob','Within 4H OB',1.2005),
+          ]},
+          { id:'gx1_lt', question:'Is there an H1 Liquidity Target?', items:[
+            f('xh1_lt_eq','Equals',1.8573),
+            f('xh1_lt_lrl','Low Resistance Liquidity',1.0395),
+            f('xh1_lt_fvg','FVG Liquidity',1.129),
+            f('xh1_lt_asl','Asian Liquidity',1.129),
+            f('xh1_lt_pdhl','PDH/PDL',0.738),
+            ng('gx1_lt_sl','Is there a structural liquidity to target?',[
+              f('xh1_lt_sw','Swing',1.0369),
+              f('xh1_lt_in','Internal',1.0251),
+              f('xh1_lt_fr','Fractal',1.1148),
+              f('xh1_lt_op','Old Points',0.9975),
+            ]),
+            f('xh1_nwog','NWOG',1.6),
+          ]},
+        ]
+      }
+    },
+    entry:{
+      'LC-1':[
+        f('xe_lc1_fr','H1 OB is fractal',1.8969),
+        f('xe_lc1_wk','Wicked the LID',1.5532),
+        f('xe_lc1_fvg','LID with FVG',1.1503),
+        f('xe_lc1_ni','No imbalance while mitigation',1.7165),
+        f('xe_lc1_nl','No other LIDs',1.4051),
+      ],
+      'LC-2A':[
+        f('xe_lc2a_fb','Fake break with body close',1.2418),
+        f('xe_lc2a_wp','Wicked the PBID',1.2416),
+        f('xe_lc2a_fr','H1 OB is fractal',0.9194),
+        f('xe_lc2a_fvg','LID with FVG',0.9197),
+        f('xe_lc2a_nl','No other LIDs',1.3723),
+      ],
+      'LC-2B':[
+        f('xe_lc2b_ea','Equals formed with less angle',1.0998),
+        f('xe_lc2b_fr','H1 OB is fractal',1.0998),
+        f('xe_lc2b_fvg','LID with FVG',1.0998),
+        f('xe_lc2b_wp','Wicked the PBID',0.9002),
+        f('xe_lc2b_nl','No other LIDs',1.1576),
+      ],
+      'CE':[
+        f('xe_ce_ib','IBos with body close',0.8382),
+        f('xe_ce_oi','H1 OB is internal',1.2477),
+        f('xe_ce_im','Has imbalance',0.8363),
+        f('xe_ce_ind','Has inducements',1.2478),
+        f('xe_ce_sl','Swept Liquidity',1.3795),
+        f('xe_ce_nl','No other LIDs',0.9728),
+      ],
+      'M15':[
+        f('xe_m15_liq','Target Liquidity',0.9348),
+        f('xe_m15_lrl','Target Liq LRLQ',1.5284),
+        f('xe_m15_eq','Target Liq Equals',1.0916),
+      ],
+    }
+  }
+};
+
+// ─── STATE ─────────────────────────────────────────────────────────────────
+const S = { inst:null, step:'home', fac:{}, gates:{}, model:null };
+const STEPS = ['daily','h4','h1','entry'];
+const STEP_LABELS = { daily:'Daily', h4:'4H', h1:'H1', entry:'Entry' };
+
+// ─── CALCULATION ───────────────────────────────────────────────────────────
+function collectItems(items, acc) {
+  for (const item of items) {
+    if (item.type === 'factor') {
+      const d = S.fac[item.id];
+      if (d) acc.push({ w:item.weight, d });
+    } else if (item.type === 'nested-gate') {
+      if (S.gates[item.id] === true) collectItems(item.items, acc);
+    }
+  }
+}
+
+function collectAll(inclEntry) {
+  if (!S.inst) return [];
+  const data = DATA[S.inst];
+  const acc = [];
+  for (const sk of ['daily','h4','h1']) {
+    const sec = data.sections[sk];
+    for (const fitem of sec.always) {
+      const d = S.fac[fitem.id];
+      if (d) acc.push({ w:fitem.weight, d });
+    }
+    for (const gate of sec.gates) {
+      if (S.gates[gate.id] === true) collectItems(gate.items, acc);
+    }
+  }
+  if (inclEntry && S.model) {
+    const ef = data.entry[S.model] || [];
+    for (const fitem of ef) {
+      const d = S.fac[fitem.id];
+      if (d) acc.push({ w:fitem.weight, d });
+    }
+  }
+  return acc;
+}
+
+function calcP(arr) {
+  if (!arr.length) return null;
+  const pos = arr.filter(x=>x.d==='pos').reduce((s,x)=>s+x.w,0);
+  const neg = arr.filter(x=>x.d==='neg').reduce((s,x)=>s+x.w,0);
+  return (pos - 0.5*neg) / arr.length;
+}
+
+function getProbs() {
+  const conf = collectAll(false);
+  const all  = collectAll(true);
+  return {
+    dir: calcP(conf), dirN: conf.length,
+    trd: calcP(all),  trdN: all.length,
+  };
+}
+
+function pColor(v) {
+  if (v === null) return '';
+  if (v >= 1.0) return 'green';
+  if (v < 0.85) return 'red';
+  return 'amber';
+}
+
+function pFmt(v) {
+  return v === null ? '—' : v.toFixed(3);
+}
+
+// ─── RENDERING ─────────────────────────────────────────────────────────────
+function frCls(depth, dir) {
+  let c = 'fr';
+  if (depth === 1) c += ' n1';
+  if (depth === 2) c += ' n2';
+  if (dir === 'pos') c += ' ap';
+  else if (dir === 'neg') c += ' an';
+  return c;
+}
+
+function renderFR(fitem, depth) {
+  const d = S.fac[fitem.id] || null;
+  return `<div id="fr_${fitem.id}" class="${frCls(depth,d)}" data-d="${depth}">
+    <span class="fr-name">${fitem.label}</span>
+    <span class="fr-wt">${fitem.weight.toFixed(3)}</span>
+    <div class="fr-btns">
+      <button class="fb fbp" onclick="sf('${fitem.id}','pos',${fitem.weight})">+</button>
+      <button class="fb fbn" onclick="sf('${fitem.id}','neg',${fitem.weight})">−</button>
+    </div>
+  </div>`;
+}
+
+function renderItems(items, depth) {
+  let h = '';
+  for (const item of items) {
+    if (item.type === 'factor') {
+      h += renderFR(item, depth);
+    } else if (item.type === 'nested-gate') {
+      const open = S.gates[item.id] === true;
+      const yn = S.gates[item.id];
+      h += `<div class="sg">
+        <div class="sg-head">
+          <div class="sg-q">${item.question}</div>
+          <div class="gate-btns">
+            <button class="gbtn${yn===true?' gy':''}" onclick="ssg('${item.id}',true)">Yes</button>
+            <button class="gbtn${yn===false?' gn':''}" onclick="ssg('${item.id}',false)">No</button>
+          </div>
+        </div>
+        <div id="sgb_${item.id}" class="sg-body${open?' open':''}">
+          ${open ? renderItems(item.items, depth+1) : ''}
+        </div>
+      </div>`;
+    } else if (item.type === 'label') {
+      h += `<div class="grp-sublbl">${item.text}</div>`;
+    }
+  }
+  return h;
+}
+
+function renderGates(gates) {
+  let h = '';
+  for (const gate of gates) {
+    const open = S.gates[gate.id] === true;
+    const yn = S.gates[gate.id];
+    h += `<div class="gate">
+      <div class="gate-head">
+        <div class="gate-q">${gate.question}</div>
+        <div class="gate-btns">
+          <button class="gbtn${yn===true?' gy':''}" onclick="sg('${gate.id}',true)">Yes</button>
+          <button class="gbtn${yn===false?' gn':''}" onclick="sg('${gate.id}',false)">No</button>
+        </div>
+      </div>
+      <div id="gb_${gate.id}" class="gate-body${open?' open':''}">
+        ${open ? renderItems(gate.items, 1) : ''}
+      </div>
+    </div>`;
+  }
+  return h;
+}
+
+function stepState(step) {
+  const idx = STEPS.indexOf(step);
+  const cur = STEPS.indexOf(S.step);
+  if (S.step === 'results') return 'done';
+  if (idx < cur) return 'done';
+  if (idx === cur) return 'active';
+  return '';
+}
+
+function renderHeader(showEntry) {
+  const data = DATA[S.inst];
+  const p = getProbs();
+  const tabs = STEPS.map(s => {
+    const st = stepState(s);
+    return `<div class="step-tab${st?' '+st:''}">${STEP_LABELS[s]}</div>`;
+  }).join('');
+  return `<div class="header">
+    <div class="header-top">
+      <button class="back-btn" onclick="goHome()">← ${data.name}</button>
+      <div class="prob-bar">
+        <div class="prob-chip">
+          <span class="prob-chip-lbl">DIR</span>
+          <span id="pdir" class="prob-chip-val ${pColor(p.dir)}">${pFmt(p.dir)}</span>
+        </div>
+        <div class="prob-chip">
+          <span class="prob-chip-lbl">TRADE</span>
+          <span id="ptrd" class="prob-chip-val ${pColor(p.trd)}">${pFmt(p.trd)}</span>
+        </div>
+      </div>
+    </div>
+    <div class="step-tabs">${tabs}</div>
+  </div>`;
+}
+
+function renderSection(sk) {
+  const sec = DATA[S.inst].sections[sk];
+  const idx = STEPS.indexOf(sk);
+  const next = STEPS[idx+1] || 'results';
+  const nextLabel = next === 'results' ? 'View Results' : STEP_LABELS[next];
+  const alwaysH = sec.always.map(fi => renderFR(fi, 0)).join('');
+  const gatesH = renderGates(sec.gates);
+  return `<div class="scroll-body">
+    <div class="grp-lbl">Market Structure</div>
+    ${alwaysH}
+    <div class="grp-lbl">Confluences</div>
+    ${gatesH}
+  </div>
+  <div class="cta-wrap">
+    <button class="cta-btn" onclick="nav('${next}')">Continue to ${nextLabel} →</button>
+  </div>`;
+}
+
+function renderEntry() {
+  const models = Object.keys(DATA[S.inst].entry);
+  const tabsH = models.map(m =>
+    `<button class="mtab${S.model===m?' active':''}" onclick="selM('${m}')">${m}</button>`
+  ).join('');
+  let factorsH = '';
+  if (S.model) {
+    factorsH = DATA[S.inst].entry[S.model].map(fi => renderFR(fi, 0)).join('');
+  } else {
+    factorsH = `<div style="color:#3E4870;font-size:13px;padding:20px 4px">Select an entry model above to view its factors.</div>`;
+  }
+  return `<div class="scroll-body">
+    <div class="grp-lbl">Entry Model</div>
+    <div class="model-tabs">${tabsH}</div>
+    ${factorsH}
+  </div>
+  <div class="cta-wrap">
+    <button class="cta-btn" onclick="nav('results')">View Results →</button>
+  </div>`;
+}
+
+function renderResults() {
+  const p = getProbs();
+  const instName = DATA[S.inst].name;
+  return `<div class="scroll-body">
+    <div class="grp-lbl">Results — ${instName}</div>
+    <div class="res-cards">
+      <div class="res-card">
+        <div class="res-card-lbl">Directional Probability</div>
+        <div class="res-card-val ${pColor(p.dir)}">${pFmt(p.dir)}</div>
+        <div class="res-card-meta">${p.dirN} confluence factor${p.dirN!==1?'s':''} selected</div>
+      </div>
+      <div class="res-card">
+        <div class="res-card-lbl">Trade Probability</div>
+        <div class="res-card-val ${pColor(p.trd)}">${pFmt(p.trd)}</div>
+        <div class="res-card-meta">${p.trdN} total factor${p.trdN!==1?'s':''} selected${S.model?' · '+S.model:''}</div>
+      </div>
+    </div>
+    <div class="res-actions">
+      <button class="res-btn primary" onclick="restart()">New Analysis (${DATA[S.inst].name})</button>
+      <button class="res-btn" onclick="goHome()">Change Instrument</button>
+    </div>
+  </div>`;
+}
+
+function renderHome() {
+  return `<div class="home">
+    <div class="home-logo">TradeMate</div>
+    <div class="home-sub">Top-down confluence probability calculator</div>
+    <div class="inst-cards">
+      <div class="inst-card" onclick="startInst('eu')">
+        <div>
+          <div class="inst-card-name">EUR/USD</div>
+          <div class="inst-card-tag">Daily → 4H → H1 → Entry</div>
+        </div>
+        <div class="inst-card-arrow">›</div>
+      </div>
+      <div class="inst-card" onclick="startInst('xau')">
+        <div>
+          <div class="inst-card-name">XAU/USD</div>
+          <div class="inst-card-tag">Daily → 4H → H1 → Entry</div>
+        </div>
+        <div class="inst-card-arrow">›</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if (S.step === 'home') {
+    app.innerHTML = renderHome();
+    return;
+  }
+  let inner = '';
+  if (S.step === 'results') {
+    inner = renderResults();
+  } else if (S.step === 'entry') {
+    inner = renderEntry();
+  } else {
+    inner = renderSection(S.step);
+  }
+  app.innerHTML = renderHeader() + inner;
+  const sb = app.querySelector('.scroll-body');
+  if (sb) sb.scrollTop = 0;
+}
+
+// ─── PARTIAL DOM UPDATES ───────────────────────────────────────────────────
+function updateRow(id) {
+  const el = document.getElementById('fr_' + id);
+  if (!el) return;
+  const depth = parseInt(el.dataset.d || '0');
+  el.className = frCls(depth, S.fac[id] || null);
+}
+
+function updateChips() {
+  const p = getProbs();
+  const pd = document.getElementById('pdir');
+  const pt = document.getElementById('ptrd');
+  if (pd) { pd.textContent = pFmt(p.dir); pd.className = 'prob-chip-val ' + pColor(p.dir); }
+  if (pt) { pt.textContent = pFmt(p.trd); pt.className = 'prob-chip-val ' + pColor(p.trd); }
+}
+
+// ─── ACTIONS ───────────────────────────────────────────────────────────────
+function sf(id, dir, w) {
+  S.fac[id] = S.fac[id] === dir ? null : dir;
+  updateRow(id);
+  updateChips();
+}
+
+function sg(id, val) {
+  S.gates[id] = val;
+  const body = document.getElementById('gb_' + id);
+  const head = body && body.previousElementSibling;
+  if (body) {
+    body.className = 'gate-body' + (val ? ' open' : '');
+    if (val && !body.innerHTML.trim()) {
+      const gate = findGate(id);
+      if (gate) body.innerHTML = renderItems(gate.items, 1);
+    }
+  }
+  if (head) {
+    const btns = head.querySelectorAll('.gbtn');
+    if (btns[0]) btns[0].className = 'gbtn' + (val === true ? ' gy' : '');
+    if (btns[1]) btns[1].className = 'gbtn' + (val === false ? ' gn' : '');
+  }
+  updateChips();
+}
+
+function ssg(id, val) {
+  S.gates[id] = val;
+  const body = document.getElementById('sgb_' + id);
+  const head = body && body.previousElementSibling;
+  if (body) {
+    body.className = 'sg-body' + (val ? ' open' : '');
+    if (val && !body.innerHTML.trim()) {
+      const sg = findSubGate(id);
+      if (sg) body.innerHTML = renderItems(sg.items, 2);
+    }
+  }
+  if (head) {
+    const btns = head.querySelectorAll('.gbtn');
+    if (btns[0]) btns[0].className = 'gbtn' + (val === true ? ' gy' : '');
+    if (btns[1]) btns[1].className = 'gbtn' + (val === false ? ' gn' : '');
+  }
+  updateChips();
+}
+
+function findGate(id) {
+  if (!S.inst) return null;
+  const data = DATA[S.inst];
+  for (const sk of ['daily','h4','h1']) {
+    for (const g of data.sections[sk].gates) {
+      if (g.id === id) return g;
+    }
+  }
+  return null;
+}
+
+function findSubGate(id) {
+  if (!S.inst) return null;
+  const data = DATA[S.inst];
+  for (const sk of ['daily','h4','h1']) {
+    for (const g of data.sections[sk].gates) {
+      for (const item of g.items) {
+        if (item.type === 'nested-gate' && item.id === id) return item;
+      }
+    }
+  }
+  return null;
+}
+
+function selM(model) {
+  S.model = model;
+  render();
+}
+
+function nav(step) {
+  S.step = step;
+  render();
+}
+
+function startInst(inst) {
+  S.inst = inst;
+  S.step = 'daily';
+  S.fac = {};
+  S.gates = {};
+  S.model = null;
+  render();
+}
+
+function goHome() {
+  S.step = 'home';
+  render();
+}
+
+function restart() {
+  const inst = S.inst;
+  S.fac = {};
+  S.gates = {};
+  S.model = null;
+  S.step = 'daily';
+  render();
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
