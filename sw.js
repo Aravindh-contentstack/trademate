@@ -1,4 +1,4 @@
-const CACHE = 'trademate-v5';
+const CACHE = 'trademate-v6';
 const ASSETS = ['/trademate/', '/trademate/index.html', '/trademate/manifest.json'];
 
 self.addEventListener('install', e => {
