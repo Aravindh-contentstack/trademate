@@ -169,9 +169,8 @@ button{cursor:pointer;font-family:inherit;-webkit-appearance:none}
 .report-pre{background:#0B0E1A;border:1px solid #1A1F35;border-radius:10px;padding:14px;font-size:11px;font-family:ui-monospace,monospace;color:#9DA8C7;overflow-x:auto;white-space:pre;line-height:1.5;max-height:50vh;overflow-y:auto}
 .report-hdr-btn{background:rgba(77,126,247,.12);border:1px solid #4D7EF7;border-radius:8px;color:#4D7EF7;font-size:13px;font-weight:700;padding:5px 10px;flex-shrink:0}
 .report-hdr-btn:active{opacity:.7}
-.gate-sel{background:#13172A;border:1px solid #252C45;border-radius:7px;color:#8892B0;font-size:15px;font-weight:600;padding:6px 12px;appearance:none;-webkit-appearance:none;cursor:pointer;min-width:100px}
-.gate-sel.gy{border-color:#2DD4A0;color:#2DD4A0;background:rgba(45,212,160,.08)}
-.gate-sel.gn{border-color:#3E4870;color:#E6EAF5;background:#1A1F35}
+.gate-chev{font-size:16px;color:#4D5880;flex-shrink:0;transition:color .15s}
+.gate-chev.open{color:#2DD4A0}
 .fr-warn{border-color:#F5A623!important;background:rgba(245,166,35,.06)!important}
 .warn-banner{background:rgba(245,166,35,.15);border:1px solid #F5A623;border-radius:8px;color:#F5A623;font-size:13px;padding:8px 12px;margin-bottom:4px;line-height:1.5}
 </style>
@@ -1130,15 +1129,10 @@ function renderGates(gates) {
   let h = '';
   for (const gate of gates) {
     const open = S.gates[gate.id] === true;
-    const yn = S.gates[gate.id];
     h += `<div class="gate">
-      <div class="gate-head">
+      <div class="gate-head" onclick="sg('${gate.id}',${!open})" style="cursor:pointer">
         <div class="gate-q">${gate.question}</div>
-        <select class="gate-sel${yn===true?' gy':yn===false?' gn':''}" onchange="sgSel('${gate.id}',this.value)">
-          <option value=""${yn===undefined?' selected':''}>— Select —</option>
-          <option value="yes"${yn===true?' selected':''}>Yes</option>
-          <option value="no"${yn===false?' selected':''}>No</option>
-        </select>
+        <span class="gate-chev${open?' open':''}">${open?'▾':'▸'}</span>
       </div>
       <div id="gb_${gate.id}" class="gate-body${open?' open':''}">
         ${open ? renderItems(gate.items, 1) : ''}
@@ -1350,7 +1344,7 @@ function sf(id, dir, w) {
 }
 
 function sg(id, val) {
-  S.gates[id] = val;
+  if (val) S.gates[id] = true; else delete S.gates[id];
   const body = document.getElementById('gb_' + id);
   const head = body && body.previousElementSibling;
   if (body) {
@@ -1361,18 +1355,13 @@ function sg(id, val) {
     }
   }
   if (head) {
-    const sel = head.querySelector('.gate-sel');
-    if (sel) sel.className = 'gate-sel' + (val === true ? ' gy' : val === false ? ' gn' : '');
+    const chev = head.querySelector('.gate-chev');
+    if (chev) { chev.textContent = val ? '▾' : '▸'; chev.className = 'gate-chev' + (val ? ' open' : ''); }
   }
   updateChips();
   schedulePush();
 }
 
-function sgSel(id, val) {
-  if (val === 'yes') sg(id, true);
-  else if (val === 'no') sg(id, false);
-  else { delete S.gates[id]; render(); }
-}
 
 function ssg(id, val) {
   S.gates[id] = val;
