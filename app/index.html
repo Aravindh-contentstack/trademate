@@ -720,9 +720,9 @@ const FB_URL = '';        // e.g. https://my-app-default-rtdb.firebaseio.com
 const FB_SECRET = '';     // from Project Settings > Service Accounts > Database secrets
 
 // ─── SHADOW LEARNING CONFIG ──────────────────────────────────────────────────
-const GH_TOKEN = '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';
 const GH_OWNER = 'Aravindh-contentstack';
 const GH_REPO  = 'trademate';
+function GH_TOKEN() { return localStorage.getItem('tm_gh_token') || ''; }
 
 let DEVICE_ID = localStorage.getItem('tm_did');
 if (!DEVICE_ID) { DEVICE_ID = Math.random().toString(36).slice(2,10); localStorage.setItem('tm_did', DEVICE_ID); }
@@ -780,7 +780,7 @@ function stopSSE() {
 const STEP_LABELS = { daily:'Daily', h4:'4H', h1:'H1', entry:'Entry' };
 
 // ─── SHADOW LEARNING — STORAGE ───────────────────────────────────────────────
-function ghEnabled() { return !!(GH_TOKEN && GH_OWNER); }
+function ghEnabled() { return !!(GH_TOKEN() && GH_OWNER); }
 
 const _SW_DEFAULT = { weights:{}, tradeCount:0, wins:0, losses:0, readCount:0, correct:0, wrong:0 };
 
@@ -800,14 +800,14 @@ async function pushShadowJSON(inst, data) {
   var content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
   var sha = null;
   try {
-    var r = await fetch(apiUrl, { headers:{ Authorization:'token ' + GH_TOKEN } });
+    var r = await fetch(apiUrl, { headers:{ Authorization:'token ' + GH_TOKEN() } });
     if (r.ok) { sha = (await r.json()).sha; }
   } catch(e) {}
   var body = { message:'shadow weights update (' + inst + ')', content: content };
   if (sha) body.sha = sha;
   fetch(apiUrl, {
     method: 'PUT',
-    headers: { Authorization:'token ' + GH_TOKEN, 'Content-Type':'application/json' },
+    headers: { Authorization:'token ' + GH_TOKEN(), 'Content-Type':'application/json' },
     body: JSON.stringify(body)
   }).catch(function(){});
 }
@@ -818,7 +818,7 @@ function pushShadowMarkdown(inst, filename, md) {
   var content = btoa(unescape(encodeURIComponent(md)));
   fetch(apiUrl, {
     method: 'PUT',
-    headers: { Authorization:'token ' + GH_TOKEN, 'Content-Type':'application/json' },
+    headers: { Authorization:'token ' + GH_TOKEN(), 'Content-Type':'application/json' },
     body: JSON.stringify({ message:'shadow log entry (' + inst + ')', content: content })
   }).catch(function(){});
 }
@@ -827,7 +827,7 @@ async function initShadowData(inst) {
   if (!ghEnabled()) return;
   try {
     var apiUrl = 'https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/data/shadow_' + inst + '.json';
-    var r = await fetch(apiUrl, { headers:{ Authorization:'token ' + GH_TOKEN } });
+    var r = await fetch(apiUrl, { headers:{ Authorization:'token ' + GH_TOKEN() } });
     if (r.ok) {
       var j = await r.json();
       var data = JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\n/g,'')))));
@@ -1283,6 +1283,7 @@ function renderHome() {
       </div>
     </div>
     <button style="background:none;border:none;color:#4D5880;font-size:14px;font-weight:600;letter-spacing:.3px;padding:4px 0;cursor:pointer" onclick="goShadow()">Shadow Weights ›</button>
+    <button style="background:none;border:none;color:${GH_TOKEN()?'#2DD4A0':'#F5A623'};font-size:12px;font-weight:600;letter-spacing:.3px;padding:4px 0;cursor:pointer" onclick="showTokenModal()">${GH_TOKEN()?'⚙ GitHub Token set':'⚠ Set GitHub Token'}</button>
   </div>`;
 }
 
@@ -1695,6 +1696,33 @@ function fallbackCopy(text, cb) {
 function closeModal() {
   var el = document.getElementById('report-modal');
   if (el) el.remove();
+}
+
+function showTokenModal() {
+  var existing = document.getElementById('token-modal');
+  if (existing) existing.remove();
+  var cur = GH_TOKEN();
+  var el = document.createElement('div');
+  el.id = 'token-modal';
+  el.className = 'modal-overlay';
+  el.innerHTML = '<div class="modal-box">' +
+    '<div class="modal-title">GitHub Token</div>' +
+    '<div style="font-size:13px;color:#6B7599;line-height:1.5">Used to save shadow weights to GitHub. Never committed to the repo — stored only in this device\'s localStorage.</div>' +
+    '<input id="tok-input" type="password" placeholder="ghp_..." value="' + cur + '" style="background:#0B0E1A;border:1px solid #252C45;border-radius:9px;color:#E6EAF5;font-size:15px;padding:11px 14px;width:100%;font-family:ui-monospace,monospace">' +
+    '<button class="res-btn primary" onclick="saveToken()">Save Token</button>' +
+    '<button class="res-btn" onclick="document.getElementById(\'token-modal\').remove()">Cancel</button>' +
+  '</div>';
+  document.body.appendChild(el);
+}
+
+function saveToken() {
+  var val = (document.getElementById('tok-input') || {}).value || '';
+  if (val.trim()) localStorage.setItem('tm_gh_token', val.trim());
+  else localStorage.removeItem('tm_gh_token');
+  document.getElementById('token-modal').remove();
+  if (S.step === 'home') render();
+  initShadowData('eu');
+  initShadowData('xau');
 }
 
 // ─── SHADOW REVIEW SCREEN ────────────────────────────────────────────────────
