@@ -1130,7 +1130,7 @@ function renderGates(gates) {
   for (const gate of gates) {
     const open = S.gates[gate.id] === true;
     h += `<div class="gate">
-      <div class="gate-head" onclick="sg('${gate.id}',${!open})" style="cursor:pointer">
+      <div class="gate-head" onclick="sg('${gate.id}')" style="cursor:pointer">
         <div class="gate-q">${gate.question}</div>
         <span class="gate-chev${open?' open':''}">${open?'▾':'▸'}</span>
       </div>
@@ -1345,6 +1345,7 @@ function sf(id, dir, w) {
 }
 
 function sg(id, val) {
+  if (val === undefined) val = S.gates[id] !== true;
   if (val) S.gates[id] = true; else delete S.gates[id];
   const body = document.getElementById('gb_' + id);
   const head = body && body.previousElementSibling;

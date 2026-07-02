@@ -1,4 +1,4 @@
-const CACHE = 'trademate-v4';
+const CACHE = 'trademate-v5';
 const ASSETS = [
   '/trademate/app/',
   '/trademate/app/index.html',
