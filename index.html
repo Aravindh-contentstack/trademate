@@ -226,8 +226,7 @@ const DATA = {
             f('d_ls_fvg','FVG',0.996),
           ]},
           { id:'gd_obt', question:'OB Target', items:[
-            ng('gd_obt_sl','Swept Liquidity',[
-              f('d_obt_sw0','Swept Liquidity',0.976),
+            gf('gd_obt_sl','Swept Liquidity',0.976,[
               f('d_obt_sw','Swing',0.972),
               f('d_obt_in','Internal',0.972),
               f('d_obt_fr','Fractal',0.972),
@@ -294,8 +293,7 @@ const DATA = {
             f('h4_ls_fvg','FVG',1.216),
           ]},
           { id:'g4_obt', question:'OB Target', items:[
-            ng('g4_obt_sl','Swept Liquidity',[
-              f('h4_obt_sw0','Swept Liquidity',1.2177),
+            gf('g4_obt_sl','Swept Liquidity',1.2177,[
               f('h4_obt_sw','Swing',1.254),
               f('h4_obt_in','Internal',1.254),
               f('h4_obt_fr','Fractal',1.254),
@@ -364,8 +362,7 @@ const DATA = {
             f('h1_ls_pdhl','PDH/PDL',1.0),
           ]},
           { id:'g1_obt', question:'OB Target', items:[
-            ng('g1_obt_sl','Swept Liquidity',[
-              f('h1_obt_sw0','Swept Liquidity',0.984),
+            gf('g1_obt_sl','Swept Liquidity',0.984,[
               f('h1_obt_sw','Swing',0.984),
               f('h1_obt_in','Internal',0.984),
               f('h1_obt_fr','Fractal',0.984),
@@ -487,8 +484,7 @@ const DATA = {
             f('xd_ls_fvg','FVG',1.5166),
           ]},
           { id:'gxd_obt', question:'OB Target', items:[
-            ng('gxd_obt_sl','Swept Liquidity',[
-              f('xd_obt_sw0','Swept Liquidity',1.1487),
+            gf('gxd_obt_sl','Swept Liquidity',1.1487,[
               f('xd_obt_sw','Swing',0.9975),
               f('xd_obt_in','Internal',1.0),
               f('xd_obt_fr','Fractal',1.2699),
@@ -555,8 +551,7 @@ const DATA = {
             f('xh4_ls_fvg','FVG',1.0754),
           ]},
           { id:'gx4_obt', question:'OB Target', items:[
-            ng('gx4_obt_sl','Swept Liquidity',[
-              f('xh4_obt_sw0','Swept Liquidity',1.0783),
+            gf('gx4_obt_sl','Swept Liquidity',1.0783,[
               f('xh4_obt_sw','Swing',0.95),
               f('xh4_obt_in','Internal',1.0448),
               f('xh4_obt_fr','Fractal',1.0421),
@@ -626,8 +621,7 @@ const DATA = {
             f('xh1_ls_pdhl','PDH/PDL',1.1709),
           ]},
           { id:'gx1_obt', question:'OB Target', items:[
-            ng('gx1_obt_sl','Swept Liquidity',[
-              f('xh1_obt_sw0','Swept Liquidity',1.0886),
+            gf('gx1_obt_sl','Swept Liquidity',1.0886,[
               f('xh1_obt_sw','Swing',1.0),
               f('xh1_obt_in','Internal',0.9975),
               f('xh1_obt_fr','Fractal',0.9003),
@@ -712,7 +706,7 @@ const DATA = {
 };
 
 // ─── STATE ─────────────────────────────────────────────────────────────────
-const S = { inst:null, step:'home', fac:{}, gates:{}, model:null, _report:null, shadowInst:'eu', _shadowBack:'home' };
+const S = { inst:null, step:'home', fac:{}, gates:{}, open:{}, model:null, _report:null, shadowInst:'eu', _shadowBack:'home' };
 const STEPS = ['daily','h4','h1','entry'];
 
 // ─── SYNC CONFIG (edit these once) ──────────────────────────────────────────
@@ -1128,7 +1122,7 @@ function renderItems(items, depth) {
 function renderGates(gates) {
   let h = '';
   for (const gate of gates) {
-    const open = S.gates[gate.id] === true;
+    const open = S.open[gate.id] === true;
     h += `<div class="gate">
       <div class="gate-head" onclick="sg('${gate.id}')" style="cursor:pointer">
         <div class="gate-q">${gate.question}</div>
@@ -1345,8 +1339,16 @@ function sf(id, dir, w) {
 }
 
 function sg(id, val) {
-  if (val === undefined) val = S.gates[id] !== true;
-  if (val) S.gates[id] = true; else delete S.gates[id];
+  if (val === undefined) val = S.open[id] !== true;
+  S.open[id] = val;
+  if (val) {
+    S.gates[id] = true;
+  } else {
+    const gate = findGate(id);
+    const test = [];
+    if (gate) collectItems(gate.items, test);
+    if (test.length) S.gates[id] = true; else delete S.gates[id];
+  }
   const body = document.getElementById('gb_' + id);
   const head = body && body.previousElementSibling;
   if (body) {
